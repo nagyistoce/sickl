@@ -95,7 +95,35 @@ namespace SiCKL
 			_ss << "vec4";
 			break;
 		default:
-			if(type & ReturnType::Buffer2D)
+			if(type & ReturnType::Buffer1D)
+			{
+				type = (ReturnType::Type)(type ^ ReturnType::Buffer1D);
+				switch(type)
+				{
+				case ReturnType::Int:
+				case ReturnType::Int2:
+				case ReturnType::Int3:
+				case ReturnType::Int4:
+					_ss << "isamplerBuffer";
+					break;
+				case ReturnType::UInt:
+				case ReturnType::UInt2:
+				case ReturnType::UInt3:
+				case ReturnType::UInt4:
+					_ss << "usamplerBuffer";
+					break;
+				case ReturnType::Float:
+				case ReturnType::Float2:
+				case ReturnType::Float3:
+				case ReturnType::Float4:
+					_ss << "samplerBuffer";
+					break;
+				default:
+					COMPUTE_ASSERT(false);
+					break;
+				}
+			}
+			else if(type & ReturnType::Buffer2D)
 			{
 				type = (ReturnType::Type)(type ^ ReturnType::Buffer2D);
 				switch(type)
@@ -472,11 +500,42 @@ namespace SiCKL
 			COMPUTE_ASSERT(node->_count >= 1);
 			print_function(node);
 			break;
+		case NodeType::Sample1D:
+			COMPUTE_ASSERT(node->_count == 2);
+			_ss << "texelFetch(";
+			print_var(node->_children[0]->_u.sid);
+			_ss << ", ";
+			print_code(node->_children[1]);
+			_ss << ")";
+			switch(node->_return_type)
+			{
+			case ReturnType::Int:
+			case ReturnType::UInt:
+			case ReturnType::Float:
+				_ss << ".x";
+				break;
+			case ReturnType::Int2:
+			case ReturnType::UInt2:
+			case ReturnType::Float2:
+				_ss << ".xy";
+				break;
+			case ReturnType::Int3:
+			case ReturnType::UInt3:
+			case ReturnType::Float3:
+				_ss << ".xyz";
+				break;
+			case ReturnType::Int4:
+			case ReturnType::UInt4:
+			case ReturnType::Float4:
+				_ss << ".xyzw";
+				break;
+			}
+			break;
 		case NodeType::Sample2D:
 			COMPUTE_ASSERT(node->_count == 3);
-			_ss << "texelFetch(var" << node->_children[0]->_u.sid;
-			_ss << ", ";
-			_ss << "ivec2(";
+			_ss << "texelFetch(";
+			print_var(node->_children[0]->_u.sid);
+			_ss << ", ivec2(";
 			print_code(node->_children[1]);
 			_ss << ",";
 			print_code(node->_children[2]);

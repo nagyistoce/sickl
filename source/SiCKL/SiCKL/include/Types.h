@@ -432,9 +432,60 @@ struct Float4 : public Data
 
 #pragma region Buffers
 
+template<typename TYPE>
+struct Buffer1D : public Data
+{
+	/// Prevent instantions of Buffer2Ds with invalid TYPE
+#pragma region
+	template<typename T>
+	struct valid_type
+	{
+		enum
+		{
+			is_valid = 0,
+		};
+	};
+
+#	define MAKE_VALID(T) template<> struct valid_type<##T##> { enum { is_valid=1 }; };
+	MAKE_VALID(Int)
+		MAKE_VALID(Int2)
+		MAKE_VALID(Int3)	
+		MAKE_VALID(Int4)
+		MAKE_VALID(UInt)
+		MAKE_VALID(UInt2)
+		MAKE_VALID(UInt3)	
+		MAKE_VALID(UInt4)
+		MAKE_VALID(Float)
+		MAKE_VALID(Float2)
+		MAKE_VALID(Float3)	
+		MAKE_VALID(Float4)
+		static_assert(valid_type<TYPE>::is_valid, "Invalid type used in Buffer1D");
+#pragma endregion
+	DEFINE_DATA(Buffer1D<TYPE>, (ReturnType::Type)(TYPE::_return_type | ReturnType::Buffer1D))
+
+	/// sampling operators
+	Temp<TYPE> operator()(int32_t A) const
+	{
+		COMPUTE_ASSERT(A >= 0);
+		ASTNode* sample  = new ASTNode(NodeType::Sample1D, get_return_type<TYPE>());
+		sample->add_child(new ASTNode(NodeType::ConstVar, get_return_type<Buffer1D<TYPE>>(), _id));
+		sample->add_child(create_literal_node(A));
+
+		return Temp<TYPE>(sample);
+	}
+
+	Temp<TYPE> operator()(Int A) const
+	{
+		ASTNode* sample  = new ASTNode(NodeType::Sample1D, get_return_type<TYPE>());
+		sample->add_child(new ASTNode(NodeType::ConstVar, get_return_type<Buffer1D<TYPE>>(), _id));
+		sample->add_child(create_data_node(A));
+
+		return Temp<TYPE>(sample);
+	}
+};
+
 template <typename TYPE>
-struct Buffer2D
-	//: public IData<Buffer2D<TYPE>, (ReturnType::Type)(TYPE::_return_type | ReturnType::Buffer2D)>
+struct Buffer2D : public Data
 {
 	/// Prevent instantions of Buffer2Ds with invalid TYPE
 #pragma region
