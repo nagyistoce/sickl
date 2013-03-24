@@ -2,6 +2,7 @@
 using namespace SiCKL;
 #include "EasyBMP.h"
 
+// algorithm from: http://en.wikipedia.org/wiki/Mandelbrot_set
 class Mandelbrot : public Source
 {
 public:
@@ -10,7 +11,8 @@ public:
 
 	BEGIN_SOURCE
 		BEGIN_CONST_DATA
-
+			CONST_DATA(Float2, min)
+			CONST_DATA(Float2, max)
 		END_CONST_DATA
 
 		BEGIN_OUT_DATA
@@ -18,7 +20,8 @@ public:
 		END_OUT_DATA
 
 		BEGIN_MAIN
-			Float2 val0 = NormalizedIndex() * Float2(3.5f, 2.0f) - Float2(2.5f, 1.0f);
+			// our sample location
+			Float2 val0 = NormalizedIndex() * (max - min) + min;
 			Float2 val(0.0f, 0.0f);
 
 			Int iteration = 0;
@@ -56,10 +59,14 @@ int main()
 	/// Print the generated GLSL source
 	printf("%s\n", program->GetSource().c_str());
 
-	const uint32_t width = 350 * 10;
-	const uint32_t height = 200 * 10;
+	const uint32_t width = 3500;
+	const uint32_t height = 2000;
 
 	program->Initialize(width, height);
+	// sets min values
+	program->SetUniform(0, -2.5f, -1.0f);
+	// setes max values
+	program->SetUniform(1, 1.0f, 1.0f);
 
 	OpenGLBuffer2D result(width, height, ReturnType::Float, nullptr);
 

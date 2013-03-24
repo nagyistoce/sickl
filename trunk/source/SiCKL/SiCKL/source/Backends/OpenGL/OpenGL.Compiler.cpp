@@ -13,7 +13,8 @@ namespace SiCKL
 {
 #pragma region GLSL generation
 
-	void OpenGLCompiler::print_var(symbol_id_t x)
+
+	std::string OpenGLCompiler::get_var_name( symbol_id_t x )
 	{
 #		define LETTER(X) char('a' + (X))
 
@@ -35,13 +36,19 @@ namespace SiCKL
 				x -= x % 26;
 			}
 		}
-
+		stringstream ss;
 		while(digits.size())
 		{
-			_ss << digits.top();
+			ss << digits.top();
 			digits.pop();
 		}
+		return ss.str();
 #		undef LETTER
+	}
+
+	void OpenGLCompiler::print_var(symbol_id_t x)
+	{
+		_ss << get_var_name(x);
 	}
 
 	void OpenGLCompiler::print_type(ReturnType::Type type)

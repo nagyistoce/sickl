@@ -202,7 +202,7 @@ namespace SiCKL
 		void print_function(const ASTNode*);
 		void print_var(symbol_id_t);
 		void print_glsl(const ASTNode*, const ASTNode*, const ASTNode*);
+		static std::string get_var_name(symbol_id_t);
+		friend class OpenGLProgram;
 	};
-
-	
 }
