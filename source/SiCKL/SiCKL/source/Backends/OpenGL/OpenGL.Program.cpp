@@ -207,13 +207,29 @@ namespace SiCKL
 		delete[] _render_buffers;
 	}
 
-	int32_t OpenGLProgram::GetUniformHandle(const char* in_name)
+	uniform_location_t OpenGLProgram::GetUniformHandle(const char* in_name)
 	{
+		for(int32_t i = 0; i < _uniform_count; i++)
+		{
+			if(strcmp(in_name, _uniforms[i]._name.c_str()) == 0)
+			{
+				return (uniform_location_t)i;
+			}
+		}
+
 		return -1;
 	}
 
-	int32_t OpenGLProgram::GetOutputHandle(const char* in_name)
+	output_location_t OpenGLProgram::GetOutputHandle(const char* in_name)
 	{
+		for(int32_t  i = 0; i < _output_count; i++)
+		{
+			if(strcmp(in_name, _outputs[i]._name.c_str()) == 0)
+			{
+				return (uniform_location_t)i;
+			}
+		}
+
 		return -1;
 	}
 

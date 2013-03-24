@@ -62,6 +62,7 @@ namespace SiCKL
 
 
 	typedef int32_t uniform_location_t;
+	typedef int32_t output_location_t;
 	class OpenGLProgram : public Program
 	{
 	public:
@@ -69,8 +70,8 @@ namespace SiCKL
 		// sets up framebuffer and vertex buffer
 		void Initialize(int32_t width, int32_t height);
 
-		int32_t GetUniformHandle(const char*);
-		int32_t GetOutputHandle(const char*);
+		uniform_location_t GetUniformHandle(const char*);
+		output_location_t GetOutputHandle(const char*);
 		// inputs to shader
 		void SetUniform(uniform_location_t, bool);
 		void SetUniform(uniform_location_t, int32_t);
@@ -94,7 +95,7 @@ namespace SiCKL
 
 
 		// outputs
-		void BindOutput(int32_t, const OpenGLBuffer2D&);
+		void BindOutput(output_location_t, const OpenGLBuffer2D&);
 
 		// read output buffer back to CPU memory
 		template<typename T>
