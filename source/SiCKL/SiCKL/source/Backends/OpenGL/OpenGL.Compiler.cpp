@@ -136,7 +136,7 @@ namespace SiCKL
 		print_type(type);
 		_ss << " ";
 		print_var(symbol_id);
-		_ss << ";";
+		_ss << ";" << endl;
 	}
 	void OpenGLCompiler::print_indent()
 	{

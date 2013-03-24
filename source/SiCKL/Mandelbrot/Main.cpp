@@ -93,7 +93,7 @@ int main()
 			auto pixel = image(j,i);
 			pixel->Red = (uint8_t)(red * 255);
 			pixel->Green = (uint8_t)(green * 255);
-			pixel->Blue = (uint8_t)(red * 255);
+			pixel->Blue = (uint8_t)(blue * 255);
 		}
 	}
 
