@@ -6,18 +6,18 @@ using namespace SiCKL;
 class Mandelbrot : public Source
 {
 public:
-	Mandelbrot() : max_iterations(50) {}
+	Mandelbrot() : max_iterations(512) {}
 	const int32_t max_iterations;
 
 	BEGIN_SOURCE
 		BEGIN_CONST_DATA
 			CONST_DATA(Float2, min)
 			CONST_DATA(Float2, max)
-			CONST_DATA(Buffer1D<Float>, scale)
+			CONST_DATA(Buffer1D<Float3>, color_map)
 		END_CONST_DATA
 
 		BEGIN_OUT_DATA
-			OUT_DATA(Float, output)
+			OUT_DATA(Float3, output)
 		END_OUT_DATA
 
 		BEGIN_MAIN
@@ -35,10 +35,10 @@ public:
 				iteration += 1;
 			EndWhile
 
+			// log scale iteration count to 0,
 			Float norm_val = (Float)(Log(iteration + 1.0f)/(float)std::logf(max_iterations + 1.0f));
-
-			output = (Float)1.0 - norm_val;
-			output = Sqrt(output);
+			// get color from lookup buffer
+			output = color_map((Int)(norm_val * (max_iterations - 1)));
 		END_MAIN
 	END_SOURCE
 };
@@ -60,40 +60,45 @@ int main()
 	/// Print the generated GLSL source
 	printf("%s\n", program->GetSource().c_str());
 
-	const uint32_t width = 3500;
-	const uint32_t height = 2000;
+	const uint32_t width = 350 * 5;
+	const uint32_t height = 200 * 5;
+	const uint32_t colors = mbrot.max_iterations;
 
-	/// our output buffer
-	OpenGLBuffer2D result(width, height, ReturnType::Float, nullptr);
-
-	float* test_buffer = new float[100];
-	for(int i = 0; i < 100; i++)
+	/// Generate the color table (a nice gold)
+	float* color_map_data = new float[3 * colors];
+	for(int i = 0; i < colors; i++)
 	{
-		test_buffer[i] = 1.0f * (1.0f / 99.0f) * i;
+		float x = i/(float)colors;
+		color_map_data[3 * i + 0] = 191.0f / 255.0f * (1.0f - x);
+		color_map_data[3 * i + 1] = 125.0f / 255.0f * (1.0f - x);
+		color_map_data[3 * i + 2] = 37.0f / 255.0f * (1.0f - x);
 	}
 
-	OpenGLBuffer1D scale_buffer(100, ReturnType::Float, test_buffer);
+	/// put it int a 1d buffer
+	OpenGLBuffer1D color_map(colors, ReturnType::Float3, color_map_data);
 
+	/// our output buffer
+	OpenGLBuffer2D result(width, height, ReturnType::Float3, nullptr);
 
 	/// initialize our program
 	program->Initialize(width, height);
 
 	/// get our binding locations for each of the program input and outputs
-	uniform_location_t min_extent = program->GetUniformHandle("min");
-	uniform_location_t max_extent = program->GetUniformHandle("max");
-	uniform_location_t scale = program->GetUniformHandle("scale");
+	uniform_location_t min_loc = program->GetUniformHandle("min");
+	uniform_location_t max_loc = program->GetUniformHandle("max");
+	uniform_location_t color_map_loc = program->GetUniformHandle("color_map");
 
-	uniform_location_t output = program->GetOutputHandle("output");
+	output_location_t output_loc = program->GetOutputHandle("output");
 
 	/// sets min values
-	program->SetUniform(min_extent, -2.5f, -1.0f);
+	program->SetUniform(min_loc, -2.5f, -1.0f);
 	/// sets max values
-	program->SetUniform(max_extent, 1.0f, 1.0f);
+	program->SetUniform(max_loc, 1.0f, 1.0f);
 	/// set the scaler
-	program->SetUniform(scale, scale_buffer);
+	program->SetUniform(color_map_loc, color_map);
 
 	/// sets the render location
-	program->BindOutput(output, result);
+	program->BindOutput(output_loc, result);
 
 	/// Runs the pgoram
 	program->Run();
@@ -103,7 +108,7 @@ int main()
 	/// We can either read result back from the texture
 	//result.GetData(result_buffer);
 	/// Or from the framebuffer (which is faster on nvidia hardware at least)
-	program->GetOutput(0, result_buffer);
+	program->GetOutput(output_loc, result_buffer);
 
 	/// Finally, dump the image to a Bitmap to view
 	BMP image;
@@ -113,9 +118,9 @@ int main()
 	{
 		for(uint32_t j = 0; j < width; j++)
 		{
-			float red = result_buffer[i * width + j];
-			float green = 0.0f;
-			float blue = 0.0f;
+			float red = result_buffer[i * width * 3 + j * 3 + 0];
+			float green = result_buffer[i * width * 3 + j * 3 + 1];
+			float blue = result_buffer[i * width * 3 + j * 3 + 2];
 
 			auto pixel = image(j,i);
 			pixel->Red = (uint8_t)(red * 255);
