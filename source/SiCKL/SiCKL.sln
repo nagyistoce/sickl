@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mandelbrot", "Mandelbrot\Mandelbrot.vcxproj", "{E1EEC2CC-6679-40C1-8F6E-24F28A09EBBF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{012CF6C5-2948-4A5F-8E5B-5A3622798591} = {012CF6C5-2948-4A5F-8E5B-5A3622798591}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SiCKL", "SiCKL\SiCKL.vcxproj", "{012CF6C5-2948-4A5F-8E5B-5A3622798591}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{012CF6C5-2948-4A5F-8E5B-5A3622798591}.Debug|Win32.ActiveCfg = Debug|Win32
+		{012CF6C5-2948-4A5F-8E5B-5A3622798591}.Debug|Win32.Build.0 = Debug|Win32
+		{012CF6C5-2948-4A5F-8E5B-5A3622798591}.Release|Win32.ActiveCfg = Release|Win32
+		{012CF6C5-2948-4A5F-8E5B-5A3622798591}.Release|Win32.Build.0 = Release|Win32
+		{E1EEC2CC-6679-40C1-8F6E-24F28A09EBBF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E1EEC2CC-6679-40C1-8F6E-24F28A09EBBF}.Debug|Win32.Build.0 = Debug|Win32
+		{E1EEC2CC-6679-40C1-8F6E-24F28A09EBBF}.Release|Win32.ActiveCfg = Release|Win32
+		{E1EEC2CC-6679-40C1-8F6E-24F28A09EBBF}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
