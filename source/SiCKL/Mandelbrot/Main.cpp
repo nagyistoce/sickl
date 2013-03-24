@@ -35,7 +35,7 @@ public:
 				iteration += 1;
 			EndWhile
 
-			// log scale iteration count to 0,
+			// log scale iteration count to 0,1
 			Float norm_val = (Float)(Log(iteration + 1.0f)/(float)std::logf(max_iterations + 1.0f));
 			// get color from lookup buffer
 			output = color_map((Int)(norm_val * (max_iterations - 1)));
