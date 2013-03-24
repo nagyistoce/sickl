@@ -437,7 +437,7 @@ operator TO() const\
 {\
 	ASTNode* node = new ASTNode(NodeType::Cast, get_return_type<TO>());\
 	node->add_child(create_value_node(*this));\
-	return Temp<TO>(node);\
+	return TO(temp_symbol, node, nullptr);\
 }
 
 #define FUNC_HEADER(RETURNTYPE, NAME)\
