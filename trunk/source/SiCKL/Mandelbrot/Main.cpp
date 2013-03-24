@@ -62,16 +62,29 @@ int main()
 	const uint32_t width = 3500;
 	const uint32_t height = 2000;
 
-	program->Initialize(width, height);
-	// sets min values
-	program->SetUniform(0, -2.5f, -1.0f);
-	// setes max values
-	program->SetUniform(1, 1.0f, 1.0f);
-
+	/// our output buffer
 	OpenGLBuffer2D result(width, height, ReturnType::Float, nullptr);
 
-	program->BindOutput(0, result);
+	/// initialize our program
+	program->Initialize(width, height);
+
+	/// get our binding locations for each of the program input and outputs
+	uniform_location_t min_extent = program->GetUniformHandle("min");
+	uniform_location_t max_extent = program->GetUniformHandle("max");
+
+	uniform_location_t output = program->GetOutputHandle("output");
+
+	/// sets min values
+	program->SetUniform(min_extent, -2.5f, -1.0f);
+	/// sets max values
+	program->SetUniform(max_extent, 1.0f, 1.0f);
+	/// sets the render location
+	program->BindOutput(output, result);
+
+	/// Runs the pgoram
 	program->Run();
+
+
 	float* result_buffer = nullptr;
 	/// We can either read result back from the texture
 	//result.GetData(result_buffer);
