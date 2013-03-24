@@ -61,7 +61,7 @@ namespace SiCKL
 			Uniform& in = _uniforms[i];
 
 			in._name = n->_name;
-			in._param_location = glGetUniformLocation(_program, n->_name);
+			in._param_location = glGetUniformLocation(_program, OpenGLCompiler::get_var_name(n->_u.sid).c_str());
 
 			COMPUTE_ASSERT(glGetError() == GL_NO_ERROR);
 
