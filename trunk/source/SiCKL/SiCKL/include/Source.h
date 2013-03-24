@@ -48,6 +48,7 @@ namespace SiCKL
 		struct Float3;
 		struct Float4;
 
+		template<typename T> struct Buffer1D;
 		template<typename T> struct Buffer2D;
 
 		// code generation for different operators

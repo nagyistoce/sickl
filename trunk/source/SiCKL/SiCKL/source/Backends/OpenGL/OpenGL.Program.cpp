@@ -112,7 +112,28 @@ namespace SiCKL
 				}
 				else if(n->_return_type & ReturnType::Buffer1D)
 				{
-					COMPUTE_ASSERT(false);
+					ReturnType::Type type = (ReturnType::Type)(n->_return_type ^ ReturnType::Buffer1D);
+					switch(type)
+					{
+					case ReturnType::Int:
+					case ReturnType::Int2:
+					case ReturnType::Int3:
+					case ReturnType::Int4:
+					case ReturnType::UInt:
+					case ReturnType::UInt2:
+					case ReturnType::UInt3:
+					case ReturnType::UInt4:
+					case ReturnType::Float:
+					case ReturnType::Float2:
+					case ReturnType::Float3:
+					case ReturnType::Float4:
+						break;
+					default:
+						COMPUTE_ASSERT(false);
+
+					}
+					in._type = n->_return_type;
+					in._sampler.texture_unit = GL_TEXTURE0 + _texture_handle_counter++;
 				}
 				else
 				{
@@ -120,7 +141,6 @@ namespace SiCKL
 				}
 				break;
 			}
-			// also add in support for textures
 		}
 		/// And Get Outputs
 
@@ -226,7 +246,7 @@ namespace SiCKL
 		{
 			if(strcmp(in_name, _outputs[i]._name.c_str()) == 0)
 			{
-				return (uniform_location_t)i;
+				return (output_location_t)i;
 			}
 		}
 
@@ -294,8 +314,12 @@ namespace SiCKL
 	/// Texture Setters
 	void OpenGLProgram::SetUniform(int32_t index, const OpenGLBuffer1D& val)
 	{
-		// not yet implemented
-		COMPUTE_ASSERT(false);
+		COMPUTE_ASSERT(index >= 0);
+		COMPUTE_ASSERT(_uniform_count > index);		
+		COMPUTE_ASSERT(_uniforms[index]._type & ReturnType::Buffer1D);
+		COMPUTE_ASSERT((_uniforms[index]._type ^ ReturnType::Buffer1D) == val.Type);
+
+		_uniforms[index]._sampler.handle = val.TextureHandle;
 	}
 
 	void OpenGLProgram::SetUniform(int32_t index, const OpenGLBuffer2D& val)
@@ -379,16 +403,17 @@ namespace SiCKL
 				glUniform4f(u._param_location, u._fvec.x, u._fvec.y, u._fvec.z, u._fvec.w);
 				break;
 			default:
-				if(u._type & ReturnType::Buffer2D)
+				if(u._type & ReturnType::Buffer1D)
+				{
+					glActiveTexture(u._sampler.texture_unit);
+					glBindTexture(GL_TEXTURE_BUFFER, u._sampler.handle);
+					glUniform1i(u._param_location, u._sampler.texture_unit - GL_TEXTURE0);
+				}
+				else if(u._type & ReturnType::Buffer2D)
 				{
 					glActiveTexture(u._sampler.texture_unit);
 					glBindTexture(GL_TEXTURE_RECTANGLE, u._sampler.handle);
 					glUniform1i(u._param_location, u._sampler.texture_unit - GL_TEXTURE0);
-				}
-				else if(u._type & ReturnType::Buffer1D)
-				{
-					// not yet implemented
-					COMPUTE_ASSERT(false);
 				}
 				else
 				{

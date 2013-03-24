@@ -173,7 +173,140 @@ namespace SiCKL
 		return texture_size;
 	}
 
-	/** OpenGL Buffer Creation **/
+	/// OpenGL Buffer Creation
+#pragma region Buffer1D
+
+	OpenGLBuffer1D::OpenGLBuffer1D()
+		: Length(-1)
+		, Type(ReturnType::Invalid)
+		, BufferHandle(-1)
+		, TextureHandle(-1)
+		, _counter(nullptr)
+	{ }
+
+	OpenGLBuffer1D::OpenGLBuffer1D(int32_t length, ReturnType::Type type, void* data)
+		: Length(length)
+		, Type(type)
+		, BufferHandle(-1)
+		, TextureHandle(-1)
+	{
+		_counter = new int32_t;
+		*_counter = 1;
+
+		void* initial_data = data;
+		if(data == nullptr)
+		{
+			const uint32_t buffer_size = GetBufferSize();
+			initial_data = malloc(buffer_size);
+			COMPUTE_ASSERT(initial_data != nullptr);
+			memset(initial_data, 0x00, buffer_size);
+		}
+
+		// create buffer, allocate space and copy in data
+		glGenBuffers(1, (GLuint*)&BufferHandle);
+		glBindBuffer(GL_TEXTURE_BUFFER, BufferHandle);
+		glBufferData(GL_TEXTURE_BUFFER, GetBufferSize(), initial_data, GL_STATIC_READ);
+		
+		// texture gen
+		glGenTextures(1, (GLuint*)&TextureHandle);
+		glBindTexture(GL_TEXTURE_BUFFER, TextureHandle);
+		switch(type)
+		{
+		case ReturnType::Int:
+			glTexBuffer(GL_TEXTURE_BUFFER, GL_R32I, BufferHandle);
+			break;
+		case ReturnType::UInt:
+			glTexBuffer(GL_TEXTURE_BUFFER, GL_R32UI, BufferHandle);
+			break;
+		case ReturnType::Float:
+			glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, BufferHandle);
+			break;
+		case ReturnType::Int2:
+			glTexBuffer(GL_TEXTURE_BUFFER, GL_RG32I, BufferHandle);
+			break;
+		case ReturnType::UInt2:
+			glTexBuffer(GL_TEXTURE_BUFFER, GL_RG32UI, BufferHandle);
+			break;
+		case ReturnType::Float2:
+			glTexBuffer(GL_TEXTURE_BUFFER, GL_RG32F, BufferHandle);
+			break;
+		case ReturnType::Int3:
+			glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32I, BufferHandle);
+			break;
+		case ReturnType::UInt3:
+			glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32UI, BufferHandle);
+			break;
+		case ReturnType::Float3:
+			glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, BufferHandle);
+			break;
+		case ReturnType::Int4:
+			glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32I, BufferHandle);
+			break;
+		case ReturnType::UInt4:
+			glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32UI, BufferHandle);
+			break;
+		case ReturnType::Float4:
+			glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, BufferHandle);
+			break;
+		}
+
+		// make sure the texture got created ok
+		auto err = glGetError();
+		COMPUTE_ASSERT(err == GL_NO_ERROR);
+
+		// clenaup
+		if(data == nullptr)
+		{
+			free(initial_data);
+		}
+
+		glBindTexture(GL_TEXTURE_BUFFER, 0);
+	}
+
+	OpenGLBuffer1D::OpenGLBuffer1D(const OpenGLBuffer1D& other)
+		: Length(-1)
+		, Type(ReturnType::Invalid)
+		, TextureHandle(-1)
+		, BufferHandle(-1)
+		, _counter(nullptr)
+	{
+		*this = other;
+	}
+
+	OpenGLBuffer1D& OpenGLBuffer1D::operator=(const OpenGLBuffer1D& other)
+	{
+		std::memcpy(this, &other, sizeof(OpenGLBuffer1D));
+		if(_counter != nullptr)
+		{
+			++(*_counter);
+		}
+
+		return *this;
+	}
+
+	OpenGLBuffer1D::~OpenGLBuffer1D()
+	{
+		if(_counter != nullptr)
+		{
+			--(*_counter);
+			if(*_counter == 0)
+			{
+				delete _counter;
+				// cleanup texture and buffer
+				glDeleteTextures(1, &TextureHandle);
+				glDeleteBuffers(1, &BufferHandle);
+			}
+		}
+	}
+
+	uint32_t OpenGLBuffer1D::GetBufferSize() const
+	{
+		return OpenGLRuntime::RequiredBufferSpace(Length, 1, Type);
+	}
+
+#pragma endregion
+
+#pragma region Buffer2D
 
 	OpenGLBuffer2D::OpenGLBuffer2D()
 		: Width(-1)
@@ -364,4 +497,5 @@ namespace SiCKL
 			COMPUTE_ASSERT(false);
 		}
 	}
+#pragma endregion
 }

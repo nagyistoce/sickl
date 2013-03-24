@@ -30,6 +30,28 @@ namespace SiCKL
 	
 	struct OpenGLBuffer1D
 	{
+		OpenGLBuffer1D();
+
+		OpenGLBuffer1D(int32_t length, ReturnType::Type type, void* data);
+		~OpenGLBuffer1D();
+		OpenGLBuffer1D(const OpenGLBuffer1D&);
+		OpenGLBuffer1D& operator=(const OpenGLBuffer1D&);
+
+		uint32_t GetBufferSize() const;
+
+		template<typename T>
+		inline void GetData(T*& in_out_buffer)
+		{
+			get_data((void**)&in_out_buffer);
+		}
+
+		const int32_t Length;
+		const ReturnType::Type Type;
+		const uint32_t BufferHandle;
+		const uint32_t TextureHandle;
+	private:
+		void get_data(void** in_out_buffer) const;
+		int32_t* _counter;
 		// uses GL_TEXTURE_BUFFER
 	};
 

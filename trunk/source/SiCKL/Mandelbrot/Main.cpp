@@ -13,6 +13,7 @@ public:
 		BEGIN_CONST_DATA
 			CONST_DATA(Float2, min)
 			CONST_DATA(Float2, max)
+			CONST_DATA(Buffer1D<Float>, scale)
 		END_CONST_DATA
 
 		BEGIN_OUT_DATA
@@ -65,12 +66,22 @@ int main()
 	/// our output buffer
 	OpenGLBuffer2D result(width, height, ReturnType::Float, nullptr);
 
+	float* test_buffer = new float[100];
+	for(int i = 0; i < 100; i++)
+	{
+		test_buffer[i] = 1.0f * (1.0f / 99.0f) * i;
+	}
+
+	OpenGLBuffer1D scale_buffer(100, ReturnType::Float, test_buffer);
+
+
 	/// initialize our program
 	program->Initialize(width, height);
 
 	/// get our binding locations for each of the program input and outputs
 	uniform_location_t min_extent = program->GetUniformHandle("min");
 	uniform_location_t max_extent = program->GetUniformHandle("max");
+	uniform_location_t scale = program->GetUniformHandle("scale");
 
 	uniform_location_t output = program->GetOutputHandle("output");
 
@@ -78,6 +89,9 @@ int main()
 	program->SetUniform(min_extent, -2.5f, -1.0f);
 	/// sets max values
 	program->SetUniform(max_extent, 1.0f, 1.0f);
+	/// set the scaler
+	program->SetUniform(scale, scale_buffer);
+
 	/// sets the render location
 	program->BindOutput(output, result);
 
