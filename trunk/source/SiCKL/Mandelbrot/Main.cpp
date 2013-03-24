@@ -36,7 +36,8 @@ public:
 			EndWhile
 
 			// log scale iteration count to 0,1
-			Float norm_val = (Float)(Log(iteration + 1.0f)/(float)std::logf(max_iterations + 1.0f));
+			Float norm_val = Log(iteration + 1.0f)/(float)std::logf(max_iterations + 1.0f);
+			
 			// get color from lookup buffer
 			output = color_map((Int)(norm_val * (max_iterations - 1)));
 		END_MAIN
@@ -59,6 +60,9 @@ int main()
 
 	/// Print the generated GLSL source
 	printf("%s\n", program->GetSource().c_str());
+
+	getc(stdin);
+	return 0;
 
 	const uint32_t width = 350 * 5;
 	const uint32_t height = 200 * 5;
