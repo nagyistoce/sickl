@@ -584,7 +584,7 @@ struct Buffer2D : public Data
 		ASTNode* sample  = new ASTNode(NodeType::Sample2D, get_return_type<TYPE>());
 		sample->add_child(new ASTNode(NodeType::ConstVar, get_return_type<Buffer2D<TYPE>>(), _id));
 		sample->add_child(create_data_node(A));
-		sample->add_child(create_valucreate_data_nodee_node(B));
+		sample->add_child(create_data_node(B));
 		return Temp<TYPE>(sample);
 	}
 };
