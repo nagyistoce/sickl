@@ -267,9 +267,7 @@ static ASTNode* create_value_node(const TYPE& val)
 template<typename BASE, typename FRIEND>
 static void binary_operator(ASTNode* root, const BASE& in_base, const FRIEND& in_friend)
 {
-	ASTNode* left = in_base._id >= 0 ? new ASTNode(NodeType::Var, get_return_type<BASE>(), in_base._id) : new ASTNode(*in_base._node);
-	COMPUTE_ASSERT(left != nullptr);
-
+	ASTNode* left = create_value_node(in_base);
 	ASTNode* right = create_value_node(in_friend);
 
 	root->add_child(left);
@@ -302,7 +300,7 @@ Temp<RETURNTYPE> operator##OP() const\
 }
 
 #define DEFINE_BINARY_OPERATOR(RETURNTYPE, FRIENDTYPE, NODETYPE, OP)\
-	Temp<RETURNTYPE> operator##OP##(const FRIENDTYPE& F) const\
+Temp<RETURNTYPE> operator##OP##(const FRIENDTYPE& F) const\
 {\
 	ASTNode* node = new ASTNode(NodeType::##NODETYPE, get_return_type<RETURNTYPE>());\
 	binary_operator(node, *this, F);\
@@ -310,13 +308,10 @@ Temp<RETURNTYPE> operator##OP() const\
 }
 
 #define DEFINE_BINARY_ASSIGNMENT_OPERATOR(RETURNTYPE, FRIENDTYPE, NODETYPE, OP)\
-	base_type& operator##OP##=(const FRIENDTYPE& F)\
+base_type& operator##OP##=(const FRIENDTYPE& F)\
 {\
-	base_type& THIS = *this;\
-	ASTNode* node = new ASTNode(NodeType::##NODETYPE, get_return_type<RETURNTYPE>());\
-	binary_operator(node, *this, F);\
-	THIS = Temp<RETURNTYPE>(node);\
-	return THIS;\
+	*this = (const base_type&)(*this OP F);\
+	return *this;\
 }
 
 #define DEFINE_BINARY_OPERATOR_FULL(RETURNTYPE, FRIENDTYPE, NODETYPE, OP)\

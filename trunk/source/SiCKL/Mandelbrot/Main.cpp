@@ -61,9 +61,7 @@ int main()
 	/// Print the generated GLSL source
 	printf("%s\n", program->GetSource().c_str());
 
-	getc(stdin);
-	return 0;
-
+	
 	const uint32_t width = 350 * 5;
 	const uint32_t height = 200 * 5;
 	const uint32_t colors = mbrot.max_iterations;
