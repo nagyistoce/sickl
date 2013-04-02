@@ -277,6 +277,9 @@ namespace SiCKL
 	{
 		if(&other != this)
 		{
+			// cleanup if we need to
+			this->~OpenGLBuffer1D();
+
 			std::memcpy(this, &other, sizeof(OpenGLBuffer1D));
 			if(_counter != nullptr)
 			{
@@ -419,6 +422,9 @@ namespace SiCKL
 	{
 		if(&other != this)
 		{
+			// cleanup if we need to
+			this->~OpenGLBuffer2D();
+
 			std::memcpy(this, &other, sizeof(OpenGLBuffer2D));
 			if(_counter != nullptr)
 			{
