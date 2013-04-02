@@ -275,10 +275,13 @@ namespace SiCKL
 
 	OpenGLBuffer1D& OpenGLBuffer1D::operator=(const OpenGLBuffer1D& other)
 	{
-		std::memcpy(this, &other, sizeof(OpenGLBuffer1D));
-		if(_counter != nullptr)
+		if(&other != this)
 		{
-			++(*_counter);
+			std::memcpy(this, &other, sizeof(OpenGLBuffer1D));
+			if(_counter != nullptr)
+			{
+				++(*_counter);
+			}
 		}
 
 		return *this;
@@ -414,12 +417,14 @@ namespace SiCKL
 
 	OpenGLBuffer2D& OpenGLBuffer2D::operator=(const OpenGLBuffer2D& other)
 	{
-		std::memcpy(this, &other, sizeof(OpenGLBuffer2D));
-		if(_counter != nullptr)
+		if(&other != this)
 		{
-			++(*_counter);
+			std::memcpy(this, &other, sizeof(OpenGLBuffer2D));
+			if(_counter != nullptr)
+			{
+				++(*_counter);
+			}
 		}
-
 		return *this;
 	}
 
