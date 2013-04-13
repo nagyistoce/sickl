@@ -86,18 +86,18 @@ int main()
 	program->Initialize(width, height);
 
 	/// get our binding locations for each of the program input and outputs
-	uniform_location_t min_loc = program->GetUniformHandle("min");
-	uniform_location_t max_loc = program->GetUniformHandle("max");
-	uniform_location_t color_map_loc = program->GetUniformHandle("color_map");
+	input_t min_loc = program->GetUniformHandle("min");
+	input_t max_loc = program->GetUniformHandle("max");
+	input_t color_map_loc = program->GetUniformHandle("color_map");
 
-	output_location_t output_loc = program->GetOutputHandle("output");
+	output_t output_loc = program->GetOutputHandle("output");
 
 	/// sets min values
-	program->SetUniform(min_loc, -2.5f, -1.0f);
+	program->SetInput(min_loc, -2.5f, -1.0f);
 	/// sets max values
-	program->SetUniform(max_loc, 1.0f, 1.0f);
+	program->SetInput(max_loc, 1.0f, 1.0f);
 	/// set the scaler
-	program->SetUniform(color_map_loc, color_map);
+	program->SetInput(color_map_loc, color_map);
 
 	/// sets the render location
 	program->BindOutput(output_loc, result);

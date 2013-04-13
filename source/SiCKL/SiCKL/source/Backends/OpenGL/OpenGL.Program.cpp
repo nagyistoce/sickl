@@ -235,26 +235,26 @@ namespace SiCKL
 		delete[] _render_buffers;
 	}
 
-	uniform_location_t OpenGLProgram::GetUniformHandle(const char* in_name)
+	input_t OpenGLProgram::GetUniformHandle(const char* in_name)
 	{
 		for(int32_t i = 0; i < _uniform_count; i++)
 		{
 			if(strcmp(in_name, _uniforms[i]._name.c_str()) == 0)
 			{
-				return (uniform_location_t)i;
+				return (input_t)i;
 			}
 		}
 
 		return -1;
 	}
 
-	output_location_t OpenGLProgram::GetOutputHandle(const char* in_name)
+	output_t OpenGLProgram::GetOutputHandle(const char* in_name)
 	{
 		for(int32_t  i = 0; i < _output_count; i++)
 		{
 			if(strcmp(in_name, _outputs[i]._name.c_str()) == 0)
 			{
-				return (output_location_t)i;
+				return (output_t)i;
 			}
 		}
 
@@ -269,14 +269,14 @@ namespace SiCKL
 	COMPUTE_ASSERT(_uniforms[index]._type == return_type);\
 
 #define SET_UNIFORM1(type_t, return_type, u)\
-	void OpenGLProgram::SetUniform(int32_t index, type_t val0)\
+	void OpenGLProgram::SetInput(int32_t index, type_t val0)\
 	{\
 		SET_UNIFORM_HEADER(return_type)\
 		_uniforms[index].##u = val0;\
 	}
 
 #define SET_UNIFORM2(type_t, return_type, u)\
-	void OpenGLProgram::SetUniform(int32_t index, type_t val0, type_t val1)\
+	void OpenGLProgram::SetInput(int32_t index, type_t val0, type_t val1)\
 	{\
 		SET_UNIFORM_HEADER(return_type)\
 		_uniforms[index].##u##.x = val0;\
@@ -284,7 +284,7 @@ namespace SiCKL
 	}
 
 #define SET_UNIFORM3(type_t, return_type, u)\
-	void OpenGLProgram::SetUniform(int32_t index, type_t val0, type_t val1, type_t val2)\
+	void OpenGLProgram::SetInput(int32_t index, type_t val0, type_t val1, type_t val2)\
 	{\
 	SET_UNIFORM_HEADER(return_type)\
 	_uniforms[index].##u##.x = val0;\
@@ -293,7 +293,7 @@ namespace SiCKL
 	}
 	
 #define SET_UNIFORM4(type_t, return_type, u)\
-	void OpenGLProgram::SetUniform(int32_t index, type_t val0, type_t val1, type_t val2, type_t val3)\
+	void OpenGLProgram::SetInput(int32_t index, type_t val0, type_t val1, type_t val2, type_t val3)\
 	{\
 	SET_UNIFORM_HEADER(return_type)\
 	_uniforms[index].##u##.x = val0;\
@@ -320,7 +320,7 @@ namespace SiCKL
 	SET_UNIFORM4(float, ReturnType::Float4, _fvec)
 
 	/// Texture Setters
-	void OpenGLProgram::SetUniform(int32_t index, const OpenGLBuffer1D& val)
+	void OpenGLProgram::SetInput(int32_t index, const OpenGLBuffer1D& val)
 	{
 		COMPUTE_ASSERT(index >= 0);
 		COMPUTE_ASSERT(_uniform_count > index);		
@@ -330,7 +330,7 @@ namespace SiCKL
 		_uniforms[index]._sampler.handle = val.TextureHandle;
 	}
 
-	void OpenGLProgram::SetUniform(int32_t index, const OpenGLBuffer2D& val)
+	void OpenGLProgram::SetInput(int32_t index, const OpenGLBuffer2D& val)
 	{
 		COMPUTE_ASSERT(index >= 0);
 		COMPUTE_ASSERT(_uniform_count > index);		
