@@ -193,7 +193,7 @@ namespace SiCKL
 		const int32_t max_texture_size = OpenGLRuntime::GetMaxTextureSize();
 		COMPUTE_ASSERT(in_width <= max_texture_size &&
 						in_height <= max_texture_size);
-		
+		 
 		// set our size
 		_size[0] = in_width;
 		_size[1] = in_height;
@@ -222,6 +222,14 @@ namespace SiCKL
 
 	OpenGLProgram::~OpenGLProgram()
 	{
+		// cleanup OpenGL resources
+		glDeleteShader(_fragment_shader);
+		glDeleteProgram(_program);
+		glDeleteVertexArrays(1, &_vertex_array);
+		glDeleteBuffers(1, &_vertex_buffer);
+		glDeleteFramebuffers(1, &_frame_buffer);
+
+		// clean up memory
 		delete[] _outputs;
 		delete[] _uniforms;
 		delete[] _render_buffers;
