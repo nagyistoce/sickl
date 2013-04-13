@@ -129,7 +129,9 @@ namespace SiCKL
 		virtual void Run();
 		const  std::string& GetSource() const {return _source;}
 	private:
-		OpenGLProgram() {}
+		OpenGLProgram() {};
+		OpenGLProgram(const OpenGLProgram&) {};
+		OpenGLProgram& operator=(const OpenGLProgram&) {return *this;};
 		OpenGLProgram(const std::string& source, const ASTNode* uniforms, const ASTNode* outputs);
 		friend class OpenGLCompiler;
 
