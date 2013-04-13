@@ -305,6 +305,12 @@ namespace SiCKL
 		}
 	}
 
+	void OpenGLBuffer1D::SetData( void* in_buffer )
+	{
+		glBindBuffer(GL_TEXTURE_BUFFER, BufferHandle);
+		glBufferSubData (GL_TEXTURE_BUFFER, 0, GetBufferSize(), in_buffer);
+	}
+
 	uint32_t OpenGLBuffer1D::GetBufferSize() const
 	{
 		return OpenGLRuntime::RequiredBufferSpace(Length, 1, Type);
@@ -451,6 +457,56 @@ namespace SiCKL
 	uint32_t OpenGLBuffer2D::GetBufferSize() const
 	{
 		return OpenGLRuntime::RequiredBufferSpace(Width, Height, Type);
+	}
+
+	void OpenGLBuffer2D::SetData( void* in_buffer )
+	{
+		glBindTexture(GL_TEXTURE_RECTANGLE, TextureHandle);
+		switch(Type)
+		{
+			// single
+		case ReturnType::Int:
+			glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, Width, Height, GL_RED_INTEGER, GL_INT, in_buffer);
+			break;
+		case ReturnType::UInt:
+			glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, Width, Height, GL_RED_INTEGER, GL_UNSIGNED_INT, in_buffer);
+			break;
+		case ReturnType::Float:
+			glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, Width, Height, GL_RED, GL_FLOAT, in_buffer);
+			break;
+			// double
+		case ReturnType::Int2:
+			glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, Width, Height, GL_RG_INTEGER, GL_INT, in_buffer);
+			break;
+		case ReturnType::UInt2:
+			glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, Width, Height, GL_RG_INTEGER, GL_UNSIGNED_INT, in_buffer);
+			break;
+		case ReturnType::Float2:
+			glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, Width, Height, GL_RG, GL_FLOAT, in_buffer);
+			break;
+			// triple
+		case ReturnType::Int3:
+			glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, Width, Height, GL_RGB_INTEGER, GL_INT, in_buffer);
+			break;
+		case ReturnType::UInt3:
+			glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, Width, Height, GL_RGB_INTEGER, GL_UNSIGNED_INT, in_buffer);
+			break;
+		case ReturnType::Float3:
+			glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, Width, Height, GL_RGB, GL_FLOAT, in_buffer);
+			break;
+			// quad
+		case ReturnType::Int4:
+			glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, Width, Height, GL_RGBA_INTEGER, GL_INT, in_buffer);
+			break;
+		case ReturnType::UInt4:
+			glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, Width, Height, GL_RGBA_INTEGER, GL_UNSIGNED_INT, in_buffer);
+			break;
+		case ReturnType::Float4:
+			glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, Width, Height, GL_RGBA, GL_FLOAT, in_buffer);
+			break;
+		default:
+			COMPUTE_ASSERT(false);
+		}
 	}
 
 	void OpenGLBuffer2D::get_data(void** in_out_buffer) const
