@@ -82,9 +82,9 @@ namespace SiCKL
 	};
 
 
-
-	typedef int32_t uniform_location_t;
-	typedef int32_t output_location_t;
+	/// handles for setting inputs and outputs for OpenGL Programs
+	typedef int32_t input_t;
+	typedef int32_t output_t;
 	class OpenGLProgram : public Program
 	{
 	public:
@@ -92,32 +92,32 @@ namespace SiCKL
 		// sets up framebuffer and vertex buffer
 		void Initialize(int32_t width, int32_t height);
 
-		uniform_location_t GetUniformHandle(const char*);
-		output_location_t GetOutputHandle(const char*);
+		input_t GetUniformHandle(const char*);
+		output_t GetOutputHandle(const char*);
 		// inputs to shader
-		void SetUniform(uniform_location_t, bool);
-		void SetUniform(uniform_location_t, int32_t);
-		void SetUniform(uniform_location_t, uint32_t);
-		void SetUniform(uniform_location_t, float);
+		void SetInput(input_t, bool);
+		void SetInput(input_t, int32_t);
+		void SetInput(input_t, uint32_t);
+		void SetInput(input_t, float);
 		// vec2s
-		void SetUniform(uniform_location_t, int32_t, int32_t);
-		void SetUniform(uniform_location_t, uint32_t, uint32_t);
-		void SetUniform(uniform_location_t, float, float);
+		void SetInput(input_t, int32_t, int32_t);
+		void SetInput(input_t, uint32_t, uint32_t);
+		void SetInput(input_t, float, float);
 		// vec3s
-		void SetUniform(uniform_location_t, int32_t, int32_t, int32_t);
-		void SetUniform(uniform_location_t, uint32_t, uint32_t, uint32_t);
-		void SetUniform(uniform_location_t, float, float, float);
+		void SetInput(input_t, int32_t, int32_t, int32_t);
+		void SetInput(input_t, uint32_t, uint32_t, uint32_t);
+		void SetInput(input_t, float, float, float);
 		// vec4s
-		void SetUniform(uniform_location_t, int32_t, int32_t, int32_t, int32_t);
-		void SetUniform(uniform_location_t, uint32_t, uint32_t, uint32_t, uint32_t);
-		void SetUniform(uniform_location_t, float, float, float, float);
+		void SetInput(input_t, int32_t, int32_t, int32_t, int32_t);
+		void SetInput(input_t, uint32_t, uint32_t, uint32_t, uint32_t);
+		void SetInput(input_t, float, float, float, float);
 
-		void SetUniform(uniform_location_t, const OpenGLBuffer1D&);
-		void SetUniform(uniform_location_t, const OpenGLBuffer2D&);
+		void SetInput(input_t, const OpenGLBuffer1D&);
+		void SetInput(input_t, const OpenGLBuffer2D&);
 
 
 		// outputs
-		void BindOutput(output_location_t, const OpenGLBuffer2D&);
+		void BindOutput(output_t, const OpenGLBuffer2D&);
 
 		// read output buffer back to CPU memory
 		template<typename T>
