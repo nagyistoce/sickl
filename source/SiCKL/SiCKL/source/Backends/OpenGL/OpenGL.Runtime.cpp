@@ -22,7 +22,7 @@ namespace SiCKL
 			return true;
 		}
 
-		static char* name = "JITStream OpenGL Runtime";
+		static char* name = "SiCKL OpenGL Runtime";
 		static int32_t count = 1;
 
 		glutInit(&count, &name);
