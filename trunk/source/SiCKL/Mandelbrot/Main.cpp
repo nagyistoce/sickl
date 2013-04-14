@@ -86,9 +86,9 @@ int main()
 	program->Initialize(width, height);
 
 	/// get our binding locations for each of the program input and outputs
-	input_t min_loc = program->GetUniformHandle("min");
-	input_t max_loc = program->GetUniformHandle("max");
-	input_t color_map_loc = program->GetUniformHandle("color_map");
+	input_t min_loc = program->GetInputHandle("min");
+	input_t max_loc = program->GetInputHandle("max");
+	input_t color_map_loc = program->GetInputHandle("color_map");
 
 	output_t output_loc = program->GetOutputHandle("output");
 
