@@ -579,7 +579,7 @@ struct Buffer2D : public Data
 		return Temp<TYPE>(sample);
 	}
 
-	Temp<TYPE> operator()(const Int A, const Int& B) const
+	Temp<TYPE> operator()(const Int& A, const Int& B) const
 	{
 		ASTNode* sample  = new ASTNode(NodeType::Sample2D, get_return_type<TYPE>());
 		sample->add_child(new ASTNode(NodeType::ConstVar, get_return_type<Buffer2D<TYPE>>(), _id));
