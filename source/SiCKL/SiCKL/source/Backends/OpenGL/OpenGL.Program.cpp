@@ -241,7 +241,7 @@ namespace SiCKL
 		delete[] _render_buffers;
 	}
 
-	input_t OpenGLProgram::GetUniformHandle(const char* in_name)
+	input_t OpenGLProgram::GetInputHandle(const char* in_name)
 	{
 		for(int32_t i = 0; i < _uniform_count; i++)
 		{
@@ -449,13 +449,22 @@ namespace SiCKL
 		glUseProgram(0);
 	}
 
-	void OpenGLProgram::get_output(int32_t i, void** in_out_buffer)
+	void OpenGLProgram::get_output(output_t i, int32_t offset_x, int32_t offset_y, int32_t width, int32_t height, void** in_out_buffer)
 	{
+		// make sure it's a valid output handle
 		COMPUTE_ASSERT(i < _output_count);
+
+		// make sure it's a valid width, offset
+		COMPUTE_ASSERT(offset_x + width <= _size[0]);
+		COMPUTE_ASSERT(offset_y + height <= _size[1]);
+		COMPUTE_ASSERT(offset_x >= 0);
+		COMPUTE_ASSERT(offset_y >= 0);
+		COMPUTE_ASSERT(width >= 0);
+		COMPUTE_ASSERT(height >= 0);
 
 		if(*in_out_buffer == nullptr)
 		{
-			*in_out_buffer = malloc(OpenGLRuntime::RequiredBufferSpace(_size[0], _size[1], _outputs[i]._type));
+			*in_out_buffer = malloc(OpenGLRuntime::RequiredBufferSpace(width, height, _outputs[i]._type));
 		}
 		int32_t format, type;
 
@@ -519,9 +528,7 @@ namespace SiCKL
 			auto err = glGetError();
 			COMPUTE_ASSERT(err == GL_NO_ERROR);
 		}
-		const int32_t& width = _size[0];
-		const int32_t& height = _size[1];
-		glReadPixels(0, 0, width, height, format, type, *in_out_buffer);
+		glReadPixels(offset_x, offset_y, width, height, format, type, *in_out_buffer);
 
 		// verify read happened ok
 		auto er = glGetError();

@@ -74,6 +74,7 @@ namespace SiCKL
 		const uint32_t TextureHandle;
 	private:
 		void get_data(void** in_out_buffer) const;
+
 		int32_t* _counter;
 		// uses GL_TEXTURE_RECTANGLE
 	};
@@ -88,7 +89,7 @@ namespace SiCKL
 		// sets up framebuffer and vertex buffer
 		void Initialize(int32_t width, int32_t height);
 
-		input_t GetUniformHandle(const char*);
+		input_t GetInputHandle(const char*);
 		output_t GetOutputHandle(const char*);
 		// inputs to shader
 		void SetInput(input_t, bool);
@@ -117,9 +118,15 @@ namespace SiCKL
 
 		// read output buffer back to CPU memory
 		template<typename T>
-		inline void GetOutput(int32_t i, T*& in_out_buffer)
+		inline void GetOutput(output_t o, T*& in_out_buffer)
 		{
-			get_output(i, (void**)&in_out_buffer);
+			get_output(o, 0, 0, _size[0], _size[1], (void**)&in_out_buffer);
+		}
+
+		template<typename T>
+		inline void GetSubOutput(output_t o, int32_t offset_x, int32_t offset_y, int32_t width, int32_t height, T*& in_out_buffer)
+		{
+			get_output(o, offset_x, offset_y, width, height, (void**)&in_out_buffer);
 		}
 
 		virtual void Run();
@@ -131,7 +138,7 @@ namespace SiCKL
 		OpenGLProgram(const std::string& source, const ASTNode* uniforms, const ASTNode* outputs);
 		friend class OpenGLCompiler;
 
-		void get_output(int32_t, void**);
+		void get_output(output_t, int32_t, int32_t, int32_t, int32_t, void**);
 
 		// glsl source code for a compiled program
 		std::string _source;
