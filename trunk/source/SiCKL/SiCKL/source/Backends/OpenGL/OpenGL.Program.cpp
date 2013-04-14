@@ -437,6 +437,7 @@ namespace SiCKL
 			}
 		}
 
+		glBindVertexArray(_vertex_array);
 		glBindBuffer(GL_ARRAY_BUFFER, _vertex_buffer);
 		glEnableVertexAttribArray(0);
 		// draw
