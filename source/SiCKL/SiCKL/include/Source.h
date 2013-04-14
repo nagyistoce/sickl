@@ -90,11 +90,11 @@ namespace SiCKL
 #define EndIf } _EndBlock();
 #define While( A ) _While(A); {
 #define EndWhile } _EndBlock();
-#define ForInRange(I, MIN, MAX)\
+#define ForInRange(I, START, STOP)\
 		{\
 			_StartBlock();\
-			Int I = MIN;\
-			While(I < MAX)\
+			Int I = START;\
+			While(I < STOP)\
 				_ForInRange I##FOR(I);
 #define EndFor\
 			EndWhile\
