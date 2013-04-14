@@ -27,6 +27,12 @@ namespace SiCKL
 
 		GLint compile_status = -1;
 		glGetShaderiv(_fragment_shader, GL_COMPILE_STATUS, &compile_status);
+
+		if(compile_status != GL_TRUE)
+		{
+			printf("Failed to Compile:\n\n%s", _source.c_str());
+		}
+
 		COMPUTE_ASSERT(compile_status == GL_TRUE );
 
 		// create final program

@@ -12,8 +12,7 @@ using namespace std;
 namespace SiCKL
 {
 #pragma region GLSL generation
-
-
+	// generates names of the form a, b c, ... aa, ab, ac, ... ba, bb, etc
 	std::string OpenGLCompiler::get_var_name( symbol_id_t x )
 	{
 #		define LETTER(X) char('a' + (X))
@@ -691,6 +690,8 @@ namespace SiCKL
 
 	OpenGLProgram* OpenGLCompiler::Build(const Source& in_source)
 	{
+		_ss = std::stringstream();
+
 		const ASTNode* root = &in_source.GetRoot();
 		const ASTNode* const_data = nullptr;
 		const ASTNode* out_data = nullptr;
