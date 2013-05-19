@@ -1,14 +1,37 @@
 #pragma once
 
 #include <stddef.h>
-#include "SiCKL.h"
 #include <map>
 #include <utility>
 #include <string>
+#include <stdint.h>
+#include <vector>
+
+#include "Enums.h"
+#include "AST.h"
 
 namespace SiCKL
 {
 	struct ASTNode;
+	
+	// forward declare all of our types
+	struct Bool;
+	struct Int;
+	struct Int2;
+	struct Int3;
+	struct Int4;
+	struct UInt;
+	struct UInt2;
+	struct UInt3;
+	struct UInt4;
+	struct Float;
+	struct Float2;
+	struct Float3;
+	struct Float4;
+
+	template<typename T> struct Buffer1D;
+	template<typename T> struct Buffer2D;
+
 	struct Source
 	{
 		Source();
@@ -33,47 +56,52 @@ namespace SiCKL
 		void initialize();
 		void finalize();
 
-		// forward declare all of our types
-		struct Bool;
-		struct Int;
-		struct Int2;
-		struct Int3;
-		struct Int4;
-		struct UInt;
-		struct UInt2;
-		struct UInt3;
-		struct UInt4;
-		struct Float;
-		struct Float2;
-		struct Float3;
-		struct Float4;
+		// friend all these types
+		friend struct Bool;
+		friend struct Int;
+		friend struct Int2;
+		friend struct Int3;
+		friend struct Int4;
+		friend struct UInt;
+		friend struct UInt2;
+		friend struct UInt3;
+		friend struct UInt4;
+		friend struct Float;
+		friend struct Float2;
+		friend struct Float3;
+		friend struct Float4;
 
-		template<typename T> struct Buffer1D;
-		template<typename T> struct Buffer2D;
-
-		// code generation for different operators
-#		include "Interfaces.h"
-		// our datatypes
-#		include "Types.h"
-		// and our functions
-#		include "Functions.h"
+		// friend types
+		template<typename BASE>
+		friend struct Out;
+		template<typename BASE>
+		friend struct Const;
+		template<typename BASE, typename PARENT>
+		friend struct Member;
 
 		// control functions
 		void _If(const Bool&);
 		void _ElseIf(const Bool&);
 		void _Else();
 		void _While(const Bool&);
+		void _ForInRange(const Int&, int32_t from, int32_t to);
+		void _ForInRange(const UInt&, uint32_t from, uint32_t to);
 
-		void _StartBlock();		
-		void _EndBlock();
-
-		struct _ForInRange
+		// use for beginning and endnig scope nodes
+		template<NodeType::Type TYPE>
+		void _StartBlock()
 		{
-			_ForInRange(Int& i) : _counter(i) {}
-			~_ForInRange() { _counter += 1;	}
-			Int& _counter;
-		};
+			ASTNode* begin = new ASTNode(TYPE, ReturnType::Void);
+			_current_block->add_child(begin);
 
+			_block_stack.push_back(begin);
+			_current_block = begin;
+		}
+		void _EndBlock()
+		{
+			_block_stack.pop_back(); 
+			_current_block = _block_stack.back();
+		}
 	private:
 		// these methods exist to prevent passing
 		// bool literals into control flow statements
@@ -105,4 +133,15 @@ namespace SiCKL
 		// override Main for new program
 		virtual void Parse() = 0;
 	};
+
+	// defines various struct types used for creating new programs
+#	include "Interfaces.h"
+	// fills in operator DEFINES as declarations (implemented in Types.cpp)
+#	include "Declares.h"
+	// Declare our datatypes
+#	include "Types.h"
+	// Declare our functions
+#	include "Functions.h"
+	// and Declre our buffer types
+#	include "Buffers.h"
 }

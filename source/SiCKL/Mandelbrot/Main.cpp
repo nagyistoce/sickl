@@ -1,4 +1,4 @@
-#include "SiCKL.h"
+#include "SiCKL.h"	
 using namespace SiCKL;
 #include "EasyBMP.h"
 
@@ -21,25 +21,32 @@ public:
 		END_OUT_DATA
 
 		BEGIN_MAIN
-			// our sample location
+
 			Float2 val0 = NormalizedIndex() * (max - min) + min;
-			Float2 val(0.0f, 0.0f);
+			Float x0 = val0.X;
+			Float y0 = val0.Y;
+
+			Float x = 0;
+			Float y = 0;
 
 			Int iteration = 0;
 
-			While(Dot(val, val) < 4.0f && iteration < max_iterations)
-				Float xtemp = val.X*val.X - val.Y*val.Y + val0.X;
-				val.Y = val.X * val.Y * 2.0f + val0.Y;
-				val.X = xtemp;
+			While(x*x + y*y < 4.0f && iteration < max_iterations)
+				Float xtemp = x*x - y*y + x0;
+				y = 2.0f*x*y + y0;
 
-				iteration += 1;
+				x = xtemp;
+
+				iteration = iteration + 1;
 			EndWhile
 
 			// log scale iteration count to 0,1
-			Float norm_val = Log(iteration + 1.0f)/(float)std::logf(max_iterations + 1.0f);
-			
+			Float norm_val = Log(((Float)iteration + 1.0f))/std::logf(max_iterations + 1.0f);
+
+
 			// get color from lookup buffer
-			output = color_map((Int)(norm_val * (max_iterations - 1)));
+			output = color_map((Int)(norm_val * (float)(max_iterations - 1)));
+
 		END_MAIN
 	END_SOURCE
 };

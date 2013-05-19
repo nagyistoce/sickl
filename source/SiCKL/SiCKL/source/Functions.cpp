@@ -3,5 +3,5 @@
 namespace SiCKL
 {
 	#include "Defines.h"
-	#include "Types.h"
+	#include "Functions.h"
 }

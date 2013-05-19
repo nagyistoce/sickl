@@ -1,7 +1,6 @@
 #pragma once
 
-#include "SiCKL.h"
-
+#include <stdint.h>
 namespace SiCKL
 {
 	typedef int32_t symbol_id_t;

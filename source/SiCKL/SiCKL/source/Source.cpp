@@ -123,20 +123,5 @@ namespace SiCKL
 		_block_stack.push_back(while_block);
 		_current_block = while_block;
 	}
-
-	void Source::_StartBlock()
-	{
-		ASTNode* block = new ASTNode(NodeType::Block, ReturnType::Void);
-		_current_block->add_child(block);
-
-		_block_stack.push_back(block);
-		_current_block = block;
-	}
-
-	void Source::_EndBlock()
-	{
-		_block_stack.pop_back();
-		_current_block = _block_stack.back();
-	}
 }
 
