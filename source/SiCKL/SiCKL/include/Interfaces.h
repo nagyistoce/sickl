@@ -54,7 +54,7 @@ struct Data
 		, _node(in_node)
 		, _name(in_name)
 	{ }
-	symbol_id_t _id;
+	mutable symbol_id_t _id;
 	ASTNode* _node;
 	const char* _name;
 };

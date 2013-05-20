@@ -24,6 +24,7 @@ namespace SiCKL
 			ElseIf,
 			Else,
 			While,
+			ForInRange,
 			// Variable Declaration
 			OutVar,
 			ConstVar,

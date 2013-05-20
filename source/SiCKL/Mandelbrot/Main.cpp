@@ -22,6 +22,11 @@ public:
 
 		BEGIN_MAIN
 
+			Int sum = 0;
+			ForInRange(I, 0, 10)
+				sum = sum + I;
+			EndFor
+
 			Float2 val0 = NormalizedIndex() * (max - min) + min;
 			Float x0 = val0.X;
 			Float y0 = val0.Y;

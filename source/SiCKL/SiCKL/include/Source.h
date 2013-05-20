@@ -85,7 +85,6 @@ namespace SiCKL
 		void _Else();
 		void _While(const Bool&);
 		void _ForInRange(const Int&, int32_t from, int32_t to);
-		void _ForInRange(const UInt&, uint32_t from, uint32_t to);
 
 		// use for beginning and endnig scope nodes
 		template<NodeType::Type TYPE>
@@ -118,16 +117,8 @@ namespace SiCKL
 #define EndIf } _EndBlock();
 #define While( A ) _While(A); {
 #define EndWhile } _EndBlock();
-#define ForInRange(I, START, STOP)\
-		{\
-			_StartBlock();\
-			Int I = START;\
-			While(I < STOP)\
-				_ForInRange I##FOR(I);
-#define EndFor\
-			EndWhile\
-			_EndBlock();\
-		}
+#define ForInRange(I, START, STOP) { const Int I; _ForInRange(I, START, STOP); {
+#define EndFor } _EndBlock(); }
 
 		
 		// override Main for new program

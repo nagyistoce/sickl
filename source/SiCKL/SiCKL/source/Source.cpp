@@ -4,7 +4,8 @@
 #undef ElseIf
 #undef Else
 #undef EndIf
-
+#undef While
+#undef ForInRange
 
 #include <vector>
 #include <sstream>
@@ -123,5 +124,26 @@ namespace SiCKL
 		_block_stack.push_back(while_block);
 		_current_block = while_block;
 	}
+	
+	void Source::_ForInRange( const Int& it, int32_t from, int32_t to )
+	{
+		COMPUTE_ASSERT(it._id == invalid_symbol);
+		// give this guy a symbol id
+		it._id = next_symbol();
+
+		ASTNode* forinrange_block = new ASTNode(NodeType::ForInRange, ReturnType::Void);
+		
+		forinrange_block->add_child(create_value_node(it));
+		forinrange_block->add_child(create_literal_node(from));
+		forinrange_block->add_child(create_literal_node(to));
+	
+		_current_block->add_child(forinrange_block);
+
+		_block_stack.push_back(forinrange_block);
+		_current_block = forinrange_block;
+	}
+	
+
+
 }
 
