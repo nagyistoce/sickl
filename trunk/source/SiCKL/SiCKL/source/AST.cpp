@@ -15,6 +15,7 @@ namespace SiCKL
 		"elseif",
 		"else",
 		"while",
+		"forinrange",
 
 		"out_var",
 		"const_var",

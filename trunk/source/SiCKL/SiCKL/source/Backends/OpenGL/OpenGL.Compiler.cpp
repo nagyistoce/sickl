@@ -183,6 +183,7 @@ namespace SiCKL
 		case NodeType::ElseIf:
 		case NodeType::Else:
 		case NodeType::While:
+		case NodeType::ForInRange:
 			break;
 		}
 	}
@@ -473,6 +474,41 @@ namespace SiCKL
 			_indent--;
 			print_indent();
 			_ss << "}" << endl;
+			break;
+		case NodeType::ForInRange:
+			COMPUTE_ASSERT(node->_count >= 3)
+			COMPUTE_ASSERT(node->_children[0]->_return_type == ReturnType::Int);
+			COMPUTE_ASSERT(node->_children[1]->_node_type == NodeType::Literal);
+			COMPUTE_ASSERT(node->_children[1]->_return_type == ReturnType::Int);
+			COMPUTE_ASSERT(node->_children[2]->_node_type == NodeType::Literal);
+			COMPUTE_ASSERT(node->_children[2]->_return_type == ReturnType::Int);
+
+			_ss << "for (int ";
+			print_var(node->_children[0]->_u.sid);
+			_ss << " = ";
+			_ss << *(int32_t*)node->_children[1]->_u.literal.data;
+			_ss << "; ";
+			print_var(node->_children[0]->_u.sid);
+			_ss << " < ";
+			_ss << *(int32_t*)node->_children[2]->_u.literal.data;
+			_ss << "; ++";
+			print_var(node->_children[0]->_u.sid);
+			_ss << ") "  << endl;
+			
+			print_indent();
+			_ss << "{" << endl;
+			_indent++;
+
+			for(uint32_t i = 3; i < node->_count; i++)
+			{
+				print_indent();
+				print_code(node->_children[i]);
+				print_newline(node->_children[i]);
+			}
+			_indent--;
+			print_indent();
+			_ss << "}" << endl;
+
 			break;
 		/// Functions
 		case NodeType::Constructor:
