@@ -35,7 +35,6 @@
 #define CONSTRUCTOR_1(TYPE, A)\
 TYPE::TYPE(const A& a)\
 {\
-	printf("In " __FUNCTION__ "\n");\
 	ASTNode* node = create_value_node(a);\
 	*this = TYPE(temp_symbol, node, nullptr);\
 }\
