@@ -41,7 +41,6 @@ TYPE::TYPE(const A& a)\
 }\
 TYPE& TYPE::operator=(const A& a)\
 {\
-	printf("In " __FUNCTION__ "\n");\
 	if(this->_id == invalid_symbol)\
 	{\
 		this->_id = Source::next_symbol();\
@@ -55,7 +54,6 @@ TYPE& TYPE::operator=(const A& a)\
 #define CONSTRUCTOR_2(TYPE, A, B)\
 TYPE::TYPE(const A& a, const B& b)\
 {\
-	printf("In " __FUNCTION__ "\n");\
 	ASTNode* node = new ASTNode(NodeType::Constructor, get_return_type<TYPE>());\
 	node->add_child(create_value_node(a));\
 	node->add_child(create_value_node(b));\
