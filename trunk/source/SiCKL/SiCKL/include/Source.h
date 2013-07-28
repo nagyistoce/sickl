@@ -55,7 +55,7 @@ namespace SiCKL
 	protected:
 		void initialize();
 		void finalize();
-
+	public:
 		// friend all these types
 		friend struct Bool;
 		friend struct Int;
@@ -80,15 +80,15 @@ namespace SiCKL
 		friend struct Member;
 
 		// control functions
-		void _If(const Bool&);
-		void _ElseIf(const Bool&);
-		void _Else();
-		void _While(const Bool&);
-		void _ForInRange(const Int&, int32_t from, int32_t to);
+		static void _If(const Bool&);
+		static void _ElseIf(const Bool&);
+		static void _Else();
+		static void _While(const Bool&);
+		static void _ForInRange(const Int&, int32_t from, int32_t to);
 
 		// use for beginning and endnig scope nodes
 		template<NodeType::Type TYPE>
-		void _StartBlock()
+		static void _StartBlock()
 		{
 			ASTNode* begin = new ASTNode(TYPE, ReturnType::Void);
 			_current_block->add_child(begin);
@@ -96,7 +96,7 @@ namespace SiCKL
 			_block_stack.push_back(begin);
 			_current_block = begin;
 		}
-		void _EndBlock()
+		static void _EndBlock()
 		{
 			_block_stack.pop_back(); 
 			_current_block = _block_stack.back();
@@ -105,20 +105,20 @@ namespace SiCKL
 		// these methods exist to prevent passing
 		// bool literals into control flow statements
 		// and creating temporary Bool objects
-		void _If(bool) {}
-		void _ElseIf(bool) {}
-		void _While(bool) {}
+		static void _If(bool) {}
+		static void _ElseIf(bool) {}
+		static void _While(bool) {}
 	public:
 
 
-#define If( A ) _If(A); {
-#define ElseIf( A ) } _ElseIf(A); {
-#define Else } _Else(); {
-#define EndIf } _EndBlock();
-#define While( A ) _While(A); {
-#define EndWhile } _EndBlock();
-#define ForInRange(I, START, STOP) { const Int I; _ForInRange(I, START, STOP); {
-#define EndFor } _EndBlock(); }
+#define If( A ) SiCKL::Source::_If(A); {
+#define ElseIf( A ) } SiCKL::Source::_ElseIf(A); {
+#define Else } SiCKL::Source::_Else(); {
+#define EndIf } SiCKL::Source::_EndBlock();
+#define While( A ) SiCKL::Source::_While(A); {
+#define EndWhile } SiCKL::Source::_EndBlock();
+#define ForInRange(I, START, STOP) { const Int I; SiCKL::Source::_ForInRange(I, START, STOP); {
+#define EndFor } SiCKL::Source::_EndBlock(); }
 
 		
 		// override Main for new program
