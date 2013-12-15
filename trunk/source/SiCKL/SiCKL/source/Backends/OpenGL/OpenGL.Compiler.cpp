@@ -567,14 +567,25 @@ namespace SiCKL
 			}
 			break;
 		case NodeType::Sample2D:
-			COMPUTE_ASSERT(node->_count == 3);
+			COMPUTE_ASSERT(node->_count == 2 || node->_count == 3);
 			_ss << "texelFetch(";
 			print_var(node->_children[0]->_u.sid);
-			_ss << ", ivec2(";
-			print_code(node->_children[1]);
-			_ss << ",";
-			print_code(node->_children[2]);
-			_ss << "))";
+			_ss << ", ";
+
+			if(node->_count == 2)
+			{
+				COMPUTE_ASSERT(node->_children[1]->_return_type == ReturnType::Int2);
+				print_code(node->_children[1]);
+				_ss << ")";
+			}
+			else if(node->_count == 3)
+			{
+				_ss << "ivec2(";
+				print_code(node->_children[1]);
+				_ss << ",";
+				print_code(node->_children[2]);
+				_ss << "))";
+			}
 			switch(node->_return_type)
 			{
 			case ReturnType::Int:
