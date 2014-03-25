@@ -357,6 +357,15 @@ namespace SiCKL
 			print_code(node->_children[0]);
 			_ss << ")";
 			break;
+		case NodeType::LeftShift:
+			COMPUTE_ASSERT(node->_count == 2);
+			print_operator("<<", node->_children[0], node->_children[1]);
+			break;
+		case NodeType::RightShift:
+			COMPUTE_ASSERT(node->_count == 2);
+			print_operator(">>", node->_children[0], node->_children[1]);
+			break;
+			break;
 		case NodeType::UnaryMinus:
 			COMPUTE_ASSERT(node->_count == 1);
 			_ss << "-";
