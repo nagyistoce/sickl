@@ -233,7 +233,7 @@ namespace SiCKL
 				{
 					float val =  *(float*)node->_u.literal.data;
 					char buffer[128];
-					int32_t length = sprintf(buffer, "%g", val);
+					int32_t length = sprintf(buffer, "%.9e", val);
 					for(int i = length - 1; 
 						(buffer[i - 1]) >= '0' && (buffer[i - 1] <= '9')
 						&& buffer[i] == '0'; --i)
