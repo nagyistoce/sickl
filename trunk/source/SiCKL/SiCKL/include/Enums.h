@@ -69,6 +69,8 @@ namespace SiCKL
 			Member,// member variable access
 			GetIndex,// get the index we're working on
 			GetNormalizedIndex,// get normalized index we're working on
+
+			Max
 		};
 	};
 	// each type is denoted by a bit

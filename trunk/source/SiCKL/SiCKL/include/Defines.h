@@ -1,7 +1,4 @@
-/************************************************************************/
-/* This header is used to make Types.h and Functions.h be read as
- * implementations
-/************************************************************************/
+// This header is used to make Types.h and Functions.h be read as implementations
 
 /// Undef everything
 #undef START_TYPE
@@ -33,7 +30,7 @@
 	//node->add_child(create_value_node(a));\*/
 
 #define CONSTRUCTOR_1(TYPE, A)\
-TYPE::TYPE(const A& a)\
+TYPE::TYPE(const A& a) : Data()\
 {\
 	ASTNode* node = create_value_node(a);\
 	*this = TYPE(temp_symbol, node, nullptr);\
@@ -83,17 +80,17 @@ TYPE::TYPE(const A& a, const B& b, const C& c, const D& d)\
 /// Operators
 
 #define BINARY_OP(Ret, L, R, NT, OP)\
-Temp<Ret> operator##OP##(const L& l, const R& r)\
+Temp<Ret> operator OP(const L& l, const R& r)\
 {\
-	ASTNode* node = new ASTNode(NodeType::##NT, get_return_type<Ret>());\
+    ASTNode* node = new ASTNode(NodeType::NT, get_return_type<Ret>());\
 	binary_operator(node, l, r);\
 	return Temp<Ret>(node);\
 }\
 
 #define UNARY_OP(Ret, L, NT, OP)\
-Temp<Ret> operator##OP(const L& l)\
+Temp<Ret> operator OP(const L& l)\
 {\
-	ASTNode* node = new ASTNode(NodeType::##NT, get_return_type<Ret>());\
+    ASTNode* node = new ASTNode(NodeType::NT, get_return_type<Ret>());\
 	unary_operator(node, l);\
 	return Temp<Ret>(node);\
 }
@@ -110,8 +107,8 @@ FROM::operator TO() const\
 
 #define START_MEMBERS(X)
 #define MEMBER_VAR(PARENT, TYPE, NAME, ID)\
-const uint32_t PARENT##::Member_##NAME::_member_offset = (uint32_t)&((PARENT##*)(void*)0)->##NAME;\
-const SiCKL::member_id_t PARENT##::Member_##NAME::_mid = ID;
+const uintptr_t PARENT::Member_##NAME::_member_offset = offsetof(PARENT, NAME);\
+const SiCKL::member_id_t PARENT::Member_##NAME::_mid = ID;
 #define END_MEMBERS
 
 /// Functions

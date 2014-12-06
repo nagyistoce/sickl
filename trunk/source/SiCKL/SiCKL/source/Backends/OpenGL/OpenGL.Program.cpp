@@ -278,34 +278,34 @@ namespace SiCKL
 	void OpenGLProgram::SetInput(int32_t index, type_t val0)\
 	{\
 		SET_UNIFORM_HEADER(return_type)\
-		_uniforms[index].##u = val0;\
+		_uniforms[index].u = val0;\
 	}
 
 #define SET_UNIFORM2(type_t, return_type, u)\
 	void OpenGLProgram::SetInput(int32_t index, type_t val0, type_t val1)\
 	{\
 		SET_UNIFORM_HEADER(return_type)\
-		_uniforms[index].##u##.x = val0;\
-		_uniforms[index].##u##.y = val1;\
+		_uniforms[index].u.x = val0;\
+		_uniforms[index].u.y = val1;\
 	}
 
 #define SET_UNIFORM3(type_t, return_type, u)\
 	void OpenGLProgram::SetInput(int32_t index, type_t val0, type_t val1, type_t val2)\
 	{\
 	SET_UNIFORM_HEADER(return_type)\
-	_uniforms[index].##u##.x = val0;\
-	_uniforms[index].##u##.y = val1;\
-	_uniforms[index].##u##.z = val2;\
+	_uniforms[index].u.x = val0;\
+	_uniforms[index].u.y = val1;\
+	_uniforms[index].u.z = val2;\
 	}
 	
 #define SET_UNIFORM4(type_t, return_type, u)\
 	void OpenGLProgram::SetInput(int32_t index, type_t val0, type_t val1, type_t val2, type_t val3)\
 	{\
 	SET_UNIFORM_HEADER(return_type)\
-	_uniforms[index].##u##.x = val0;\
-	_uniforms[index].##u##.y = val1;\
-	_uniforms[index].##u##.z = val2;\
-	_uniforms[index].##u##.w = val3;\
+	_uniforms[index].u.x = val0;\
+	_uniforms[index].u.y = val1;\
+	_uniforms[index].u.z = val2;\
+	_uniforms[index].u.w = val3;\
 	}
 
 	SET_UNIFORM1(bool, ReturnType::Bool, _bool)

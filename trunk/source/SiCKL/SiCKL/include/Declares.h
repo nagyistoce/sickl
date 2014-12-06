@@ -1,7 +1,4 @@
-/************************************************************************/
-/* This header is used to make Types.h and Functions.h be read as 
- * forward declarations
-/************************************************************************/
+// This header is used to make Types.h and Functions.h be read as as forward declerations
 
 /// Types
 
@@ -40,11 +37,11 @@ struct X : public Data\
 /// Operators
 
 #define BINARY_OP(RETURN, L, R, NT, OP)\
-	friend Temp<RETURN> operator##OP##(const L&, const R&);
+    friend Temp<RETURN> operator OP(const L&, const R&);
 
 // not increment or decrement though
 #define UNARY_OP(RETURN, L, NT, OP)\
-	friend Temp<RETURN> operator##OP##(const L&);
+    friend Temp<RETURN> operator OP(const L&);
 
 #define CAST_OP(FROM, TO)\
 	operator TO() const;
@@ -58,7 +55,7 @@ struct Member_##NAME : public Member<TYPE, PARENT>\
 	using Member<TYPE, PARENT>::operator=;\
 	Member_##NAME() : Member<TYPE, PARENT>(_member_offset, _mid) { }\
 private:\
-	const static uint32_t _member_offset;\
+    const static uintptr_t _member_offset;\
 	const static member_id_t _mid;\
 } NAME;
 #define END_MEMBERS

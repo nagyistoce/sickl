@@ -1,5 +1,3 @@
-#pragma region Operators
-
 /// boolean operators
 
 #define EQUALS_OP(L, R)\
@@ -42,8 +40,6 @@
 	BINARY_OP(Ret, L, R, LeftShift, <<)\
 	BINARY_OP(Ret, L, R, RightShift, >>)
 
-#pragma endregion
-
 START_TYPE(Bool)
 	CONSTRUCTOR_1(Bool, bool)
 	CONSTRUCTOR_1(Bool, Bool)
@@ -55,8 +51,6 @@ START_TYPE(Bool)
 	BINARY_OP(Bool, Bool, Bool, LogicalAnd, &&)
 	UNARY_OP(Bool, Bool, LogicalNot, !)
 END_TYPE
-
-#pragma region Int Types
 
 START_TYPE(Int)
 	CONSTRUCTOR_1(Int, int32_t)
@@ -219,10 +213,6 @@ START_TYPE(Int4)
 	END_MEMBERS
 END_TYPE
 
-#pragma endregion
-
-#pragma region UInt Types
-
 START_TYPE(UInt)
 	CONSTRUCTOR_1(UInt, uint32_t)
 	CONSTRUCTOR_1(UInt, UInt)
@@ -370,10 +360,6 @@ START_TYPE(UInt4)
 	END_MEMBERS
 END_TYPE
 
-#pragma endregion
-
-#pragma region Float Types
-
 START_TYPE(Float)
 	CONSTRUCTOR_1(Float, float)
 	CONSTRUCTOR_1(Float, Float)
@@ -426,8 +412,8 @@ START_TYPE(Float2)
 	CAST_OP(Float2, UInt2)
 
 	START_MEMBERS(Float2)
-	MEMBER_VAR(Float2, Float, X, 0);
-	MEMBER_VAR(Float2, Float, Y, 1);
+		MEMBER_VAR(Float2, Float, X, 0);
+		MEMBER_VAR(Float2, Float, Y, 1);
 	END_MEMBERS
 END_TYPE
 
@@ -459,9 +445,9 @@ START_TYPE(Float3)
 	CAST_OP(Float3, Int3)
 
 	START_MEMBERS(Float3)
-	MEMBER_VAR(Float3, Float, X, 0);
-	MEMBER_VAR(Float3, Float, Y, 1);
-	MEMBER_VAR(Float3, Float, Z, 2);
+        MEMBER_VAR(Float3, Float, X, 0);
+        MEMBER_VAR(Float3, Float, Y, 1);
+        MEMBER_VAR(Float3, Float, Z, 2);
 	END_MEMBERS
 END_TYPE
 
@@ -499,11 +485,10 @@ START_TYPE(Float4)
 	CAST_OP(Float4, UInt4)
 
 	START_MEMBERS(Float4)
-	MEMBER_VAR(Float4, Float, X, 0)
-	MEMBER_VAR(Float4, Float, Y, 1)
-	MEMBER_VAR(Float4, Float, Z, 2)
-	MEMBER_VAR(Float4, Float, W, 3)
+        MEMBER_VAR(Float4, Float, X, 0)
+        MEMBER_VAR(Float4, Float, Y, 1)
+        MEMBER_VAR(Float4, Float, Z, 2)
+        MEMBER_VAR(Float4, Float, W, 3)
 	END_MEMBERS
 END_TYPE
 
-#pragma endregion

@@ -4,6 +4,17 @@
 
 namespace SiCKL
 {
+	// all the SiCKL::Source::TYPES extend Data
+	struct Data
+	{
+		Data();
+		Data(symbol_id_t in_id, struct ASTNode* in_node, const char* in_name);
+		~Data();
+		mutable symbol_id_t _id;
+		struct ASTNode* _node;
+		const char* _name;
+	};
+
 	struct ASTNode
 	{
 		ASTNode();
@@ -13,10 +24,11 @@ namespace SiCKL
 		template<typename T>
 		ASTNode(NodeType::Type node_type, ReturnType::Type return_type, const T* data_pointer)
 			: _node_type(node_type)
-			, _return_type(return_type)
 			, _count(0)
 			, _capacity(1)
+			, _return_type(return_type)
 			, _name(nullptr)
+
 		{
 			COMPUTE_ASSERT(node_type == NodeType::Literal);
 			// copy in raw data
@@ -40,7 +52,6 @@ namespace SiCKL
 
 		union
 		{
-			
 			symbol_id_t sid;
 			struct
 			{
@@ -68,33 +79,30 @@ namespace SiCKL
 	{
 		return false;
 	}
-#pragma region is primitive specializations
-#define IS_PRIMITIVE(A) template<> static bool is_primitive<##A##>() { return true; }
+	#define IS_PRIMITIVE(A) template<> inline bool is_primitive< A >() { return true; }
 	IS_PRIMITIVE(bool)
-		IS_PRIMITIVE(uint8_t)
-		IS_PRIMITIVE(int8_t)
-		IS_PRIMITIVE(uint16_t)
-		IS_PRIMITIVE(int16_t)
-		IS_PRIMITIVE(uint32_t)
-		IS_PRIMITIVE(int32_t)
-		IS_PRIMITIVE(uint64_t)
-		IS_PRIMITIVE(int64_t)
-		IS_PRIMITIVE(float)
-		IS_PRIMITIVE(double)
-#pragma endregion
-		template<typename T> 
+	IS_PRIMITIVE(uint8_t)
+	IS_PRIMITIVE(int8_t)
+	IS_PRIMITIVE(uint16_t)
+	IS_PRIMITIVE(int16_t)
+	IS_PRIMITIVE(uint32_t)
+	IS_PRIMITIVE(int32_t)
+	IS_PRIMITIVE(uint64_t)
+	IS_PRIMITIVE(int64_t)
+	IS_PRIMITIVE(float)
+	IS_PRIMITIVE(double)
+
+	template<typename T> 
 	inline static ReturnType::Type get_return_type()
 	{
 		return T::_return_type;
 	}
-#pragma region primitive to returntype conversion specialization
 
-#define PRIMITIVE_TO_RETURNTYPE(P, RT) template<> static inline ReturnType::Type get_return_type<##P##>() {return (RT);}
+	#define PRIMITIVE_TO_RETURNTYPE(P, RT) template<> inline ReturnType::Type get_return_type< P >() {return (RT);}
 	PRIMITIVE_TO_RETURNTYPE(bool, ReturnType::Bool)
-		PRIMITIVE_TO_RETURNTYPE(int32_t, ReturnType::Int)
-		PRIMITIVE_TO_RETURNTYPE(uint32_t, ReturnType::UInt)
-		PRIMITIVE_TO_RETURNTYPE(float, ReturnType::Float)
-#pragma endregion
+	PRIMITIVE_TO_RETURNTYPE(int32_t, ReturnType::Int)
+	PRIMITIVE_TO_RETURNTYPE(uint32_t, ReturnType::UInt)
+	PRIMITIVE_TO_RETURNTYPE(float, ReturnType::Float)
 
 	/// Data Node Creation
 
@@ -140,5 +148,26 @@ namespace SiCKL
 
 		}
 		return result;
+	}
+
+	/// Unary and Binary operator methods
+
+	template<typename BASE>
+	static void unary_operator(struct ASTNode* root, const BASE& in_base)
+	{
+		COMPUTE_ASSERT(is_primitive<BASE>() == false);
+
+		ASTNode* child = create_data_node(in_base);
+		root->add_child(child);
+	}
+
+	template<typename BASE, typename FRIEND>
+	static void binary_operator(ASTNode* root, const BASE& in_base, const FRIEND& in_friend)
+	{
+		ASTNode* left = create_value_node(in_base);
+		ASTNode* right = create_value_node(in_friend);
+
+		root->add_child(left);
+		root->add_child(right);
 	}
 }

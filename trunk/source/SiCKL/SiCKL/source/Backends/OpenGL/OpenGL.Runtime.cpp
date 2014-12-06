@@ -1,6 +1,7 @@
 #include "Backends/OpenGL.h"
 
 #include <stdint.h>
+#include <string.h>
 
 // opengl and friends
 #include <GL/glew.h>
@@ -15,6 +16,13 @@ namespace SiCKL
 
 	static GLint _vertex_shader = -1;
 
+	static int32_t _version = -1;
+
+	static inline int32_t GetOpenGLVersion()
+	{
+		return _version;
+	}
+
 	bool OpenGLRuntime::Initialize()
 	{
 		if(_initialized == true)
@@ -22,10 +30,10 @@ namespace SiCKL
 			return true;
 		}
 
-		static char* name = "SiCKL OpenGL Runtime";
+		static const char* name = "SiCKL OpenGL Runtime";
 		static int32_t count = 1;
 
-		glutInit(&count, &name);
+		glutInit(&count, (char**)&name);
 
 		_window_id = glutCreateWindow(name);
 		glutHideWindow();
@@ -36,25 +44,24 @@ namespace SiCKL
 
 		int version = major * 10 + minor;
 
-		if(version != 33)	// version 3.3
+		if(version <= 33)	// version 3.3
 		{
 			glutDestroyWindow(_window_id);
-			if(version < 33)
-			{
-				return false;
-			}
-			else
-			{
-				// newer context, rollback to old
-				glutInitContextVersion(3, 3);
-				_window_id = glutCreateWindow(name);
-				glutHideWindow();
-			}
+			return false;
+
 		}
 
+		// save off our version
+		_version = version;
+
 		// we have to set this to true or else we won't get all the functions we need
-		glewExperimental=TRUE;
+		glewExperimental=true;
 		auto result = glewInit();
+		if(result != GLEW_OK)
+		{
+			glutDestroyWindow(_window_id);
+			return false;
+		}
 
 		while(glGetError() != GL_NO_ERROR);
 
@@ -174,14 +181,12 @@ namespace SiCKL
 	}
 
 	/// OpenGL Buffer Creation
-#pragma region Buffer1D
 
 	OpenGLBuffer1D::OpenGLBuffer1D()
 		: Length(-1)
 		, Type(ReturnType::Invalid)
 		, BufferHandle(-1)
 		, TextureHandle(-1)
-		, _counter(nullptr)
 	{ }
 
 	OpenGLBuffer1D::OpenGLBuffer1D(int32_t length, ReturnType::Type type, void* data)
@@ -190,9 +195,6 @@ namespace SiCKL
 		, BufferHandle(-1)
 		, TextureHandle(-1)
 	{
-		_counter = new int32_t;
-		*_counter = 1;
-
 		void* initial_data = data;
 		if(data == nullptr)
 		{
@@ -248,6 +250,8 @@ namespace SiCKL
 		case ReturnType::Float4:
 			glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, BufferHandle);
 			break;
+		default:
+			COMPUTE_ASSERT(false);
 		}
 
 		// make sure the texture got created ok
@@ -263,46 +267,10 @@ namespace SiCKL
 		glBindTexture(GL_TEXTURE_BUFFER, 0);
 	}
 
-	OpenGLBuffer1D::OpenGLBuffer1D(const OpenGLBuffer1D& other)
-		: Length(-1)
-		, Type(ReturnType::Invalid)
-		, TextureHandle(-1)
-		, BufferHandle(-1)
-		, _counter(nullptr)
+	void OpenGLBuffer1D::Delete()
 	{
-		*this = other;
-	}
-
-	OpenGLBuffer1D& OpenGLBuffer1D::operator=(const OpenGLBuffer1D& other)
-	{
-		if(&other != this)
-		{
-			// cleanup if we need to
-			this->~OpenGLBuffer1D();
-
-			std::memcpy(this, &other, sizeof(OpenGLBuffer1D));
-			if(_counter != nullptr)
-			{
-				++(*_counter);
-			}
-		}
-
-		return *this;
-	}
-
-	OpenGLBuffer1D::~OpenGLBuffer1D()
-	{
-		if(_counter != nullptr)
-		{
-			--(*_counter);
-			if(*_counter == 0)
-			{
-				delete _counter;
-				// cleanup texture and buffer
-				glDeleteTextures(1, &TextureHandle);
-				glDeleteBuffers(1, &BufferHandle);
-			}
-		}
+		glDeleteTextures(1, &TextureHandle);
+		glDeleteBuffers(1, &BufferHandle);
 	}
 
 	void OpenGLBuffer1D::SetData( void* in_buffer )
@@ -316,16 +284,11 @@ namespace SiCKL
 		return OpenGLRuntime::RequiredBufferSpace(Length, 1, Type);
 	}
 
-#pragma endregion
-
-#pragma region Buffer2D
-
 	OpenGLBuffer2D::OpenGLBuffer2D()
 		: Width(-1)
 		, Height(-1)
 		, Type(ReturnType::Invalid)
 		, TextureHandle(-1)
-		, _counter(nullptr)
 	{ }
 
 	OpenGLBuffer2D::OpenGLBuffer2D(int32_t width, int32_t height, ReturnType::Type type, void* data)
@@ -334,9 +297,6 @@ namespace SiCKL
 		, Type(type)
 		, TextureHandle(-1)
 	{
-		_counter = new int32_t;
-		*_counter = 1;
-
 		glGenTextures(1, (GLuint*)&TextureHandle);
 		glBindTexture(GL_TEXTURE_RECTANGLE, TextureHandle);
 
@@ -414,49 +374,48 @@ namespace SiCKL
 		glBindTexture(GL_TEXTURE_RECTANGLE, 0);
 	}
 
-	OpenGLBuffer2D::OpenGLBuffer2D(const OpenGLBuffer2D& other)
-		: Width(-1)
-		, Height(-1)
-		, Type(ReturnType::Invalid)
-		, TextureHandle(-1)
-		, _counter(nullptr)
+	void OpenGLBuffer2D::Delete()
 	{
-		*this = other;
-	}
-
-	OpenGLBuffer2D& OpenGLBuffer2D::operator=(const OpenGLBuffer2D& other)
-	{
-		if(&other != this)
-		{
-			// cleanup if we need to
-			this->~OpenGLBuffer2D();
-
-			std::memcpy(this, &other, sizeof(OpenGLBuffer2D));
-			if(_counter != nullptr)
-			{
-				++(*_counter);
-			}
-		}
-		return *this;
-	}
-
-	OpenGLBuffer2D::~OpenGLBuffer2D()
-	{
-		if(_counter != nullptr)
-		{
-			--(*_counter);
-			if(*_counter == 0)
-			{
-				delete _counter;
-				// cleanup texture handle
-				glDeleteTextures(1, &TextureHandle);
-			}
-		}
+		// cleanup texture handle
+		glDeleteTextures(1, &TextureHandle);
 	}
 
 	uint32_t OpenGLBuffer2D::GetBufferSize() const
 	{
 		return OpenGLRuntime::RequiredBufferSpace(Width, Height, Type);
+	}
+
+	void OpenGLBuffer2D::SetData(OpenGLBuffer2D& in_buffer)
+	{
+		COMPUTE_ASSERT(this != &in_buffer);
+
+		COMPUTE_ASSERT(this->Width == in_buffer.Width);
+		COMPUTE_ASSERT(this->Height == in_buffer.Height);
+		COMPUTE_ASSERT(this->Type == in_buffer.Type);
+
+		// old verions
+
+		if(GetOpenGLVersion() < 43)
+		{
+			// Texture -> CPU -> Texture copy
+			void* buffer;
+			get_data(&buffer);
+
+			in_buffer.SetData(buffer);
+		}
+		else
+		{
+			glCopyImageSubData(in_buffer.TextureHandle, GL_TEXTURE_RECTANGLE, 0, 0, 0, 0, this->TextureHandle, GL_TEXTURE_RECTANGLE, 0, 0, 0, 0, this->Width, this->Height, 1);
+
+			// make sure the texture got created ok
+			auto err = glGetError();
+			COMPUTE_ASSERT(err == GL_NO_ERROR);
+			// Texture -> Texture copy
+		}
+		void* buffer = nullptr;
+		get_data(&buffer);
+
+		
 	}
 
 	void OpenGLBuffer2D::SetData( void* in_buffer )
@@ -564,5 +523,4 @@ namespace SiCKL
 			COMPUTE_ASSERT(false);
 		}
 	}
-#pragma endregion
 }

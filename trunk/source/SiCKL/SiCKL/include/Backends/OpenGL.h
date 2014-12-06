@@ -6,7 +6,6 @@
 #include <set>
 #include <string>
 
-
 namespace SiCKL
 {
 	class OpenGLRuntime
@@ -28,15 +27,13 @@ namespace SiCKL
 	// http://www.opengl.org/registry/doc/GLSLangSpec.3.30.6.pdf )
 	
 	
-	struct OpenGLBuffer1D
+	struct OpenGLBuffer1D : public RefCounted<OpenGLBuffer1D>
 	{
+		REF_COUNTED(OpenGLBuffer1D)
+
 		OpenGLBuffer1D();
 
 		OpenGLBuffer1D(int32_t length, ReturnType::Type type, void* data);
-		~OpenGLBuffer1D();
-		OpenGLBuffer1D(const OpenGLBuffer1D&);
-		OpenGLBuffer1D& operator=(const OpenGLBuffer1D&);
-
 		uint32_t GetBufferSize() const;
 
 		void SetData(void* in_buffer);
@@ -46,17 +43,14 @@ namespace SiCKL
 		const uint32_t BufferHandle;
 		const uint32_t TextureHandle;
 	private:
-		int32_t* _counter;
 		// uses GL_TEXTURE_BUFFER
 	};
 
-	struct OpenGLBuffer2D
+	struct OpenGLBuffer2D : public RefCounted<OpenGLBuffer2D>
 	{
+		REF_COUNTED(OpenGLBuffer2D)
 		OpenGLBuffer2D();
 		OpenGLBuffer2D(int32_t width, int32_t height, ReturnType::Type type, void* data);
-		~OpenGLBuffer2D();
-		OpenGLBuffer2D(const OpenGLBuffer2D&);
-		OpenGLBuffer2D& operator=(const OpenGLBuffer2D&);
 		
 		uint32_t GetBufferSize() const;
 		
@@ -66,7 +60,9 @@ namespace SiCKL
 			get_data((void**)&in_out_buffer);
 		}
 
+		// set data from CPU
 		void SetData(void* in_buffer);
+		void SetData(OpenGLBuffer2D& in_buffer);
 
 		const int32_t Width;
 		const int32_t Height;
@@ -74,8 +70,6 @@ namespace SiCKL
 		const uint32_t TextureHandle;
 	private:
 		void get_data(void** in_out_buffer) const;
-
-		int32_t* _counter;
 		// uses GL_TEXTURE_RECTANGLE
 	};
 
