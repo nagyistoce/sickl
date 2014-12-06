@@ -1,6 +1,16 @@
 #include "SiCKL.h"	
 using namespace SiCKL;
 #include "EasyBMP.h"
+#include <math.h>
+
+#if 0
+KernelSource(MandelBrot)
+{
+	KernelMain(Float2 min, Float2 max, Buffer1D<Float3> color_map) -> KernelOutput(Float3 output)
+
+	EndMain
+};
+#endif
 
 // algorithm from: http://en.wikipedia.org/wiki/Mandelbrot_set
 class Mandelbrot : public Source
@@ -41,7 +51,7 @@ public:
 			EndWhile
 
 			// log scale iteration count to 0,1
-			Float norm_val = Log(((Float)iteration + 1.0f))/std::logf(max_iterations + 1.0f);
+			Float norm_val = Log(((Float)iteration + 1.0f))/float(log(max_iterations + 1.0));
 
 
 			// get color from lookup buffer
@@ -55,11 +65,13 @@ int main()
 {
 	// init GLEW/GLUT and other gl setup
 	OpenGLRuntime::Initialize();
+
 	OpenGLCompiler comp;
 
 	Mandelbrot mbrot;
 	mbrot.Parse();
 	/// Prints the AST generated from the Mandelbrot source
+
 	mbrot.GetRoot().Print();
 
 	/// Compile our OpenGL program
@@ -75,7 +87,7 @@ int main()
 
 	/// Generate the color table (a nice gold)
 	float* color_map_data = new float[3 * colors];
-	for(int i = 0; i < colors; i++)
+	for(uint32_t i = 0; i < colors; i++)
 	{
 		float x = i/(float)colors;
 		color_map_data[3 * i + 0] = 191.0f / 255.0f * (1.0f - x);
@@ -88,6 +100,7 @@ int main()
 
 	/// our output buffer
 	OpenGLBuffer2D result(width, height, ReturnType::Float3, nullptr);
+	OpenGLBuffer2D copy(width, height, ReturnType::Float3, nullptr);
 
 	/// initialize our program
 	program->Initialize(width, height);
@@ -109,15 +122,17 @@ int main()
 	/// sets the render location
 	program->BindOutput(output_loc, result);
 
-	/// Runs the pgoram
+	/// Runs the program
 	program->Run();
 
+	/// Copy our data to the second buffer
+	copy.SetData(result);
 
 	float* result_buffer = nullptr;
 	/// We can either read result back from the texture
-	//result.GetData(result_buffer);
+	copy.GetData(result_buffer);
 	/// Or from the framebuffer (which is faster on nvidia hardware at least)
-	program->GetOutput(output_loc, result_buffer);
+	//program->GetOutput(output_loc, result_buffer);
 
 	/// Finally, dump the image to a Bitmap to view
 	BMP image;
@@ -145,6 +160,7 @@ int main()
 	free(result_buffer);
 	delete program;
 
+	OpenGLRuntime::Finalize();
 
 	/// Keep program from exiting
 	getc(stdin);

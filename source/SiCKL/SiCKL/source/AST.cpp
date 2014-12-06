@@ -40,6 +40,9 @@ namespace SiCKL
 		"^",
 		"~",
 
+		"<<",
+		">>",
+
 		"-",
 		"+",
 		"-",
@@ -58,6 +61,8 @@ namespace SiCKL
 		"get_normalized_index",
 	};
 
+	static_assert(_countof(NodeTypes) == (NodeType::Max + 1), "Mismatch between NodeTypes string and enum");
+
 #define RETURN_TYPE_SWITCH(F, B)	\
 	switch(type)\
 	{\
@@ -66,7 +71,7 @@ namespace SiCKL
 	case ReturnType::Int:\
 		return F "int" B;\
 	case ReturnType::UInt:\
-		return F "Uint" B;\
+		return F "uint" B;\
 	case ReturnType::Float:\
 		return F "float" B;\
 	case ReturnType::Int2:\
@@ -122,13 +127,39 @@ namespace SiCKL
 		return "unknown";
 	}
 
+	/// struct Data implementation
+
+	Data::Data()
+		: _id(invalid_symbol)
+		, _node(nullptr)
+		, _name(nullptr)
+	{ }
+
+	Data::Data(symbol_id_t in_id, struct ASTNode* in_node, const char* in_name)
+		: _id(in_id)
+		, _node(in_node)
+		, _name(in_name)
+	{ }
+
+	Data::~Data()
+	{
+		if(_node)
+		{
+			delete _node;
+			_node = nullptr;
+		}
+	}
+
+
+
+
 	/// AST related guff
 
 	ASTNode::ASTNode()
 		: _node_type(NodeType::Invalid)
-		, _return_type(ReturnType::Invalid)
 		, _count(0)
 		, _capacity(1)
+		, _return_type(ReturnType::Invalid)
 		, _name(nullptr)
 	{
 		_children = new ASTNode*[_capacity];
@@ -137,8 +168,6 @@ namespace SiCKL
 
 	ASTNode::ASTNode(const ASTNode& in_node)
 	{
-		COMPUTE_ASSERT(in_node._children > 0);
-
 		_node_type = in_node._node_type;
 		_return_type = in_node._return_type;
 		_name = in_node._name;
@@ -174,9 +203,9 @@ namespace SiCKL
 
 	ASTNode::ASTNode(NodeType::Type node_type, ReturnType::Type return_type)
 		: _node_type(node_type)
-		, _return_type(return_type)
 		, _count(0)
 		, _capacity(1)
+		, _return_type(return_type)
 		, _name(nullptr)
 	{
 		_children = new ASTNode*[_capacity];
@@ -185,9 +214,9 @@ namespace SiCKL
 
 	ASTNode::ASTNode(NodeType::Type node_type, ReturnType::Type return_type, symbol_id_t sid)
 		: _node_type(node_type)
-		, _return_type(return_type)
 		, _count(0)
 		, _capacity(1)
+		, _return_type(return_type)
 		, _name(nullptr)
 	{
 		_u.sid = sid;
@@ -266,7 +295,12 @@ namespace SiCKL
 			case ReturnType::Float:
 				printf(", val = %f", *(float*)_u.literal.data);
 				break;
+			default:
+				COMPUTE_ASSERT(false);
+				break;
 			}
+			break;
+		default:
 			break;
 		}
 	}

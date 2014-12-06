@@ -86,7 +86,7 @@ namespace SiCKL
 		static void _While(const Bool&);
 		static void _ForInRange(const Int&, int32_t from, int32_t to);
 
-		// use for beginning and endnig scope nodes
+		// use for beginning and ending scope nodes
 		template<NodeType::Type TYPE>
 		static void _StartBlock()
 		{
@@ -109,17 +109,6 @@ namespace SiCKL
 		static void _ElseIf(bool) {}
 		static void _While(bool) {}
 	public:
-
-
-#define If( A ) SiCKL::Source::_If(A); {
-#define ElseIf( A ) } SiCKL::Source::_ElseIf(A); {
-#define Else } SiCKL::Source::_Else(); {
-#define EndIf } SiCKL::Source::_EndBlock();
-#define While( A ) SiCKL::Source::_While(A); {
-#define EndWhile } SiCKL::Source::_EndBlock();
-#define ForInRange(I, START, STOP) { const Int I; SiCKL::Source::_ForInRange(I, START, STOP); {
-#define EndFor } SiCKL::Source::_EndBlock(); }
-
 		
 		// override Main for new program
 		virtual void Parse() = 0;
@@ -136,3 +125,16 @@ namespace SiCKL
 	// and Declre our buffer types
 #	include "Buffers.h"
 }
+ 
+/// macros for actual SiCKL sources
+
+#define If( A ) SiCKL::Source::_If(A); {
+#define ElseIf( A ) } SiCKL::Source::_ElseIf(A); {
+#define Else } SiCKL::Source::_Else(); {
+#define EndIf } SiCKL::Source::_EndBlock();
+#define While( A ) SiCKL::Source::_While(A); {
+#define EndWhile } SiCKL::Source::_EndBlock();
+#define ForInRange(I, START, STOP) { const Int I; SiCKL::Source::_ForInRange(I, START, STOP); {
+#define EndFor } SiCKL::Source::_EndBlock(); }
+
+

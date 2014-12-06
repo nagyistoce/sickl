@@ -81,6 +81,7 @@
     <ClCompile Include="source\Backends\OpenGL\OpenGL.Compiler.cpp" />
     <ClCompile Include="source\Backends\OpenGL\OpenGL.Program.cpp" />
     <ClCompile Include="source\Backends\OpenGL\OpenGL.Runtime.cpp" />
+    <ClCompile Include="source\Common.cpp" />
     <ClCompile Include="source\Functions.cpp" />
     <ClCompile Include="source\Source.cpp" />
     <ClCompile Include="source\Types.cpp" />
@@ -89,6 +90,7 @@
     <ClInclude Include="include\AST.h" />
     <ClInclude Include="include\Backends\OpenGL.h" />
     <ClInclude Include="include\Buffers.h" />
+    <ClInclude Include="include\Common.h" />
     <ClInclude Include="include\Compiler.h" />
     <ClInclude Include="include\Declares.h" />
     <ClInclude Include="include\Defines.h" />

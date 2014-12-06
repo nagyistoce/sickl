@@ -1,30 +1,29 @@
+template<typename T>
+struct valid_buffer_type
+{
+    enum
+    {
+        is_valid = 0,
+    };
+};
+
+#define MAKE_VALID(T) template<> struct valid_buffer_type<T> { enum { is_valid=1 }; };
+MAKE_VALID(Int)
+MAKE_VALID(Int2)
+MAKE_VALID(Int3)
+MAKE_VALID(Int4)
+MAKE_VALID(UInt)
+MAKE_VALID(UInt2)
+MAKE_VALID(UInt3)
+MAKE_VALID(UInt4)
+MAKE_VALID(Float)
+MAKE_VALID(Float2)
+MAKE_VALID(Float3)
+MAKE_VALID(Float4)
+
 START_BUFFER_TYPE(Buffer1D)
 	/// Prevent instantions of Buffer2Ds with invalid TYPE
-#pragma region
-	template<typename T>
-	struct valid_type
-	{
-		enum
-		{
-			is_valid = 0,
-		};
-	};
-
-#define MAKE_VALID(T) template<> struct valid_type<##T##> { enum { is_valid=1 }; };
-	MAKE_VALID(Int)
-	MAKE_VALID(Int2)
-	MAKE_VALID(Int3)        
-	MAKE_VALID(Int4)
-	MAKE_VALID(UInt)
-	MAKE_VALID(UInt2)
-	MAKE_VALID(UInt3)       
-	MAKE_VALID(UInt4)
-	MAKE_VALID(Float)
-	MAKE_VALID(Float2)
-	MAKE_VALID(Float3)      
-	MAKE_VALID(Float4)
-	static_assert(valid_type<TYPE>::is_valid, "Invalid type used in Buffer1D");
-#pragma endregion
+    static_assert(valid_buffer_type<TYPE>::is_valid, "Invalid type used in Buffer1D");
 	/// sampling operators
 	Temp<TYPE> operator()(int32_t A) const
 	{
@@ -46,31 +45,7 @@ END_TYPE
 
 START_BUFFER_TYPE(Buffer2D)
 	/// Prevent instantions of Buffer2Ds with invalid TYPE
-#pragma region
-	template<typename T>
-	struct valid_type
-	{
-		enum
-		{
-			is_valid = 0,
-		};
-	};
-
-#       define MAKE_VALID(T) template<> struct valid_type<##T##> { enum { is_valid=1 }; };
-	MAKE_VALID(Int)
-		MAKE_VALID(Int2)
-		MAKE_VALID(Int3)        
-		MAKE_VALID(Int4)
-		MAKE_VALID(UInt)
-		MAKE_VALID(UInt2)
-		MAKE_VALID(UInt3)       
-		MAKE_VALID(UInt4)
-		MAKE_VALID(Float)
-		MAKE_VALID(Float2)
-		MAKE_VALID(Float3)      
-		MAKE_VALID(Float4)
-		static_assert(valid_type<TYPE>::is_valid, "Invalid type used in Buffer2D");
-#pragma endregion
+    static_assert(valid_buffer_type<TYPE>::is_valid, "Invalid type used in Buffer2D");
 	
 	/// sampling operators  
 	Temp<TYPE>  operator()(int32_t A, int32_t B) const

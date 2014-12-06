@@ -11,7 +11,7 @@ using namespace std;
 
 namespace SiCKL
 {
-#pragma region GLSL generation
+
 	// generates names of the form a, b c, ... aa, ab, ac, ... ba, bb, etc
 	std::string OpenGLCompiler::get_var_name( symbol_id_t x )
 	{
@@ -232,17 +232,13 @@ namespace SiCKL
 			case ReturnType::Float:
 				{
 					float val =  *(float*)node->_u.literal.data;
-					char buffer[128];
-					int32_t length = sprintf(buffer, "%.9e", val);
-					for(int i = length - 1; 
-						(buffer[i - 1]) >= '0' && (buffer[i - 1] <= '9')
-						&& buffer[i] == '0'; --i)
-					{
-						buffer[i] = 0;
-					}
+					char buffer[24] = {0};
+					sprintf(buffer, "%.9e", val);
 					_ss << buffer << "f";
 				}
 				break;
+			default:
+				COMPUTE_ASSERT(false);
 			}
 			break;
 		case NodeType::Member:
@@ -447,7 +443,7 @@ namespace SiCKL
 			_ss << "}" << endl;
 			break;
 		case NodeType::Else:
-			COMPUTE_ASSERT(node->_count >= 0);
+			COMPUTE_ASSERT(node->_count >= 1);
 			_ss << "else" << endl;
 			print_indent();
 			_ss << "{" << endl;
@@ -573,6 +569,8 @@ namespace SiCKL
 			case ReturnType::Float4:
 				_ss << ".xyzw";
 				break;
+			default:
+				COMPUTE_ASSERT(false);
 			}
 			break;
 		case NodeType::Sample2D:
@@ -616,6 +614,9 @@ namespace SiCKL
 			case ReturnType::UInt4:
 			case ReturnType::Float4:
 				_ss << ".xyzw";
+				break;
+			default:
+				COMPUTE_ASSERT(false);
 				break;
 			}
 			break;
@@ -742,11 +743,11 @@ namespace SiCKL
 		print_code(main);
 		_ss << "}" << endl;
 	}
-#pragma endregion
 
 	OpenGLProgram* OpenGLCompiler::Build(const Source& in_source)
 	{
-		_ss = std::stringstream();
+		_ss.str("");
+		_ss.clear();
 
 		const ASTNode* root = &in_source.GetRoot();
 		const ASTNode* const_data = nullptr;
@@ -769,6 +770,9 @@ namespace SiCKL
 				break;
 			case NodeType::Main:
 				main = root->_children[i];
+				break;
+			default:
+				COMPUTE_ASSERT(false);
 				break;
 			}
 		}
