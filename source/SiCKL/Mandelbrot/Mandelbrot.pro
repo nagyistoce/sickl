@@ -1,10 +1,21 @@
-QT += opengl
+QT -= core gui
 
 TEMPLATE = app
 
 CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
+
+# fix config to ONLY contain our build type
+CONFIG(debug, debug|release) {
+    CONFIG -= release
+    CONFIG += debug
+} else {
+    CONFIG -= debug
+    CONFIG += release
+}
+
+# binary name
 
 TARGET = Mandelbrot
 
@@ -26,16 +37,25 @@ SOURCES += \
 
 # linking
 
-Debug:LIBS += -L../../../bin/Debug -lSiCKLD
-Release:LIBS += -L../../../bin/Release -lSiCKL
+debug:LIBS += -L$$PWD/../../../bin/Debug -lSiCKLD
+release:LIBS += -L$$PWD/../../../bin/Release -lSiCKL
 
-win32
-{
-    LIBS += -L../../../extern/glew-1.9.0/lib -lglew32s
-    LIBS += -L../../../extern/freeglut-2.8.0/lib -lfreeglut_static
-}
-
-unix {
+win32 {
+    LIBS += -L$$PWD/../../../extern/glew-1.9.0/lib -lglew32s
+    LIBS += -L$$PWD/../../../extern/glfw-3.0.4/lib -lglfw3
+    LIBS += -lopengl32
+    LIBS += -luser32
+    LIBS += -lkernel32
+    LIBS += -lgdi32
+} else:macx {
+    QMAKE_MAC_SDK = macosx10.10
+    LIBS += -L/usr/local/lib -lGLEW
+    LIBS += -L/usr/local/lib -lglfw3
+    LIBS += -framework Cocoa
+    LIBS += -framework OpenGL
+    LIBS += -framework IOKit
+    LIBS += -framework CoreVideo
+} else:unix {
     LIBS += -L/usr/lib -lglut
     LIBS += -lGLEW
     LIBS += -lGLU
@@ -51,10 +71,12 @@ unix {
 
 # output directories
 
-Release:DESTDIR = $$PWD/../../../bin/Release
-Debug:DESTDIR = $$PWD/../../../bin/Debug
+release:DESTDIR = $$PWD/../../../bin/Release
+debug:DESTDIR = $$PWD/../../../bin/Debug
 
 OBJECTS_DIR = $$DESTDIR/.obj
 MOC_DIR = $$DESTDIR/.moc
 RCC_DIR = $$DESTDIR/.qrc
 UI_DIR = $$DESTDIR/.ui
+
+macx: LIBS += -lglfw3

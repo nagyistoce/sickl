@@ -61,7 +61,7 @@ namespace SiCKL
 		"get_normalized_index",
 	};
 
-	static_assert(_countof(NodeTypes) == (NodeType::Max + 1), "Mismatch between NodeTypes string and enum");
+    static_assert(count_of(NodeTypes) == (NodeType::Max + 1), "Mismatch between NodeTypes string and enum");
 
 #define RETURN_TYPE_SWITCH(F, B)	\
 	switch(type)\

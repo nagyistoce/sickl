@@ -64,7 +64,11 @@ public:
 int main()
 {
 	// init GLEW/GLUT and other gl setup
-	OpenGLRuntime::Initialize();
+    if(!OpenGLRuntime::Initialize())
+    {
+        printf("Could not create OpenGL Context\n");
+        return -1;
+    }
 
 	OpenGLCompiler comp;
 
@@ -125,14 +129,15 @@ int main()
 	/// Runs the program
 	program->Run();
 
-	/// Copy our data to the second buffer
-	copy.SetData(result);
+    /// We can copy our data to the second buffer
+    copy.SetData(result);
 
-	float* result_buffer = nullptr;
-	/// We can either read result back from the texture
-	copy.GetData(result_buffer);
+    float* result_buffer = nullptr;
+    /// We can either read result back from the texture
+    copy.GetData(result_buffer);
+
 	/// Or from the framebuffer (which is faster on nvidia hardware at least)
-	//program->GetOutput(output_loc, result_buffer);
+    program->GetOutput(output_loc, result_buffer);
 
 	/// Finally, dump the image to a Bitmap to view
 	BMP image;
@@ -161,7 +166,4 @@ int main()
 	delete program;
 
 	OpenGLRuntime::Finalize();
-
-	/// Keep program from exiting
-	getc(stdin);
 }

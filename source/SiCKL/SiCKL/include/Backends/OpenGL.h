@@ -61,8 +61,9 @@ namespace SiCKL
 		}
 
 		// set data from CPU
-		void SetData(void* in_buffer);
-		void SetData(OpenGLBuffer2D& in_buffer);
+        void SetData(const void* in_buffer);
+        // set data from another texture
+        void SetData(const OpenGLBuffer2D& in_buffer);
 
 		const int32_t Width;
 		const int32_t Height;
