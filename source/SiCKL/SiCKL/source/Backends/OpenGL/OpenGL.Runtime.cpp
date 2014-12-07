@@ -13,17 +13,17 @@
 #ifdef _WIN32
 extern "C" double _libm_sse2_pow_precise(double a, double b)
 {
-    return pow(a,b);
+	return pow(a,b);
 }
 #endif
 
 namespace SiCKL
 {
 	static bool _initialized = false;
-    //static int32_t _window_id = -1;
-    GLFWwindow* _window = nullptr;
-    static int32_t _max_texture_size = -1;
-    static int32_t _max_viewport_dimensions[2] = {-1, -1};
+	//static int32_t _window_id = -1;
+	GLFWwindow* _window = nullptr;
+	static int32_t _max_texture_size = -1;
+	static int32_t _max_viewport_dimensions[2] = {-1, -1};
 
 	static GLint _vertex_shader = -1;
 
@@ -41,55 +41,55 @@ namespace SiCKL
 			return true;
 		}
 
-        if(!glfwInit())
-        {
-            return false;
-        }
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		if(!glfwInit())
+		{
+			return false;
+		}
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        static const char* name = "SiCKL OpenGL Runtime";
-        _window = glfwCreateWindow(1, 1, name, nullptr, nullptr);
-        if(_window == nullptr)
-        {
-            glfwTerminate();
-            return false;
-        }
+		static const char* name = "SiCKL OpenGL Runtime";
+		_window = glfwCreateWindow(1, 1, name, nullptr, nullptr);
+		if(_window == nullptr)
+		{
+			glfwTerminate();
+			return false;
+		}
 
-        glfwMakeContextCurrent(_window);
-        glfwHideWindow(_window);
-        int major, minor;
-        glGetIntegerv(GL_MAJOR_VERSION, &major);
-        glGetIntegerv(GL_MINOR_VERSION, &minor);
+		glfwMakeContextCurrent(_window);
+		glfwHideWindow(_window);
+		int major, minor;
+		glGetIntegerv(GL_MAJOR_VERSION, &major);
+		glGetIntegerv(GL_MINOR_VERSION, &minor);
 
-        int version = major * 10 + minor;
+		int version = major * 10 + minor;
 
-        if(version < 33)	// version 3.3
-        {
-            glfwTerminate();
-            return false;
-        }
+		if(version < 33)	// version 3.3
+		{
+			glfwTerminate();
+			return false;
+		}
 
-        // save off our version
-        _version = version;
+		// save off our version
+		_version = version;
 
 		// we have to set this to true or else we won't get all the functions we need
 		glewExperimental=true;
 		auto result = glewInit();
 		if(result != GLEW_OK)
 		{
-            glfwTerminate();
+			glfwTerminate();
 			return false;
 		}
 
 		while(glGetError() != GL_NO_ERROR);
-        ///  Setup initial properties
+		///  Setup initial properties
 
 		// fill polygons drawn
 		// http://www.opengl.org/sdk/docs/man3/xhtml/glPolygonMode.xml
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		// according to docs, these are the only two capabilities
 		// enabeld by default (the rest are disabled)
 		 // http://www.opengl.org/sdk/docs/man3/xhtml/glDisable.xml
@@ -140,7 +140,7 @@ namespace SiCKL
 	{
 		if(_initialized)
 		{
-            glfwTerminate();
+			glfwTerminate();
 			_initialized = false;
 		}
 
@@ -402,7 +402,7 @@ namespace SiCKL
 		return OpenGLRuntime::RequiredBufferSpace(Width, Height, Type);
 	}
 
-    void OpenGLBuffer2D::SetData(const OpenGLBuffer2D& in_buffer)
+	void OpenGLBuffer2D::SetData(const OpenGLBuffer2D& in_buffer)
 	{
 		COMPUTE_ASSERT(this != &in_buffer);
 
@@ -410,16 +410,16 @@ namespace SiCKL
 		COMPUTE_ASSERT(this->Height == in_buffer.Height);
 		COMPUTE_ASSERT(this->Type == in_buffer.Type);
 
-        // old versions
+		// old versions
 
 		if(GetOpenGLVersion() < 43)
 		{
 			// Texture -> CPU -> Texture copy
-            void* buffer = nullptr;
-            in_buffer.GetData(buffer);
+			void* buffer = nullptr;
+			in_buffer.GetData(buffer);
 
-            this->SetData(buffer);
-            free(buffer);
+			this->SetData(buffer);
+			free(buffer);
 		}
 		else
 		{
@@ -432,7 +432,7 @@ namespace SiCKL
 		}
 	}
 
-    void OpenGLBuffer2D::SetData( const void* in_buffer )
+	void OpenGLBuffer2D::SetData( const void* in_buffer )
 	{
 		glBindTexture(GL_TEXTURE_RECTANGLE, TextureHandle);
 		switch(Type)

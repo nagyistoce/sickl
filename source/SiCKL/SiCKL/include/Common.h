@@ -68,11 +68,11 @@ public: \
 	{ \
 		if(this != &right) \
 		{ \
-			RefCounted<X>::operator=(right); \
+			SiCKL::RefCounted<X>::operator=(right); \
 		} \
 		return *this; \
 	} \
 private: \
 	void Delete(); \
-	friend class RefCounted<X>; \
+	friend class SiCKL::RefCounted<X>; \
 public:
