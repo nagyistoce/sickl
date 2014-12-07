@@ -1,7 +1,10 @@
 #include <stdint.h>
 
+#define count_of(X) (sizeof(X) / sizeof(X[0]))
+
 namespace SiCKL
 {
+
 	// not threadsafe!
 	// structs extending RefCounted must implement:
 	// void Delete() - destructor

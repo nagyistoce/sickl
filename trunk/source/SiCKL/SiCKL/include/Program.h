@@ -8,6 +8,5 @@ namespace SiCKL
 	{
 	public:
 		virtual void Run() = 0;
-		virtual void Initialize() {};
 	};
 }

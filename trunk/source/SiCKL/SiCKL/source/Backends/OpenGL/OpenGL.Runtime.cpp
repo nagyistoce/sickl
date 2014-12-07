@@ -2,17 +2,28 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <math.h>
 
 // opengl and friends
 #include <GL/glew.h>
-#include <GL/freeglut.h>
+#include <GLFW/glfw3.h>
+
+// glfw is linked against newer version of C libs from VS 11 with a different pow method
+// since we're building with VS 10, we need to define this func
+#ifdef _WIN32
+extern "C" double _libm_sse2_pow_precise(double a, double b)
+{
+    return pow(a,b);
+}
+#endif
 
 namespace SiCKL
 {
 	static bool _initialized = false;
-	static int32_t _window_id = -1;
-	static int32_t _max_texture_size = -1;
-	static int32_t _max_viewport_dimensions[2] = {-1, -1};
+    //static int32_t _window_id = -1;
+    GLFWwindow* _window = nullptr;
+    static int32_t _max_texture_size = -1;
+    static int32_t _max_viewport_dimensions[2] = {-1, -1};
 
 	static GLint _vertex_shader = -1;
 
@@ -30,57 +41,63 @@ namespace SiCKL
 			return true;
 		}
 
-		static const char* name = "SiCKL OpenGL Runtime";
-		static int32_t count = 1;
+        if(!glfwInit())
+        {
+            return false;
+        }
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		glutInit(&count, (char**)&name);
+        static const char* name = "SiCKL OpenGL Runtime";
+        _window = glfwCreateWindow(1, 1, name, nullptr, nullptr);
+        if(_window == nullptr)
+        {
+            glfwTerminate();
+            return false;
+        }
 
-		_window_id = glutCreateWindow(name);
-		glutHideWindow();
+        glfwMakeContextCurrent(_window);
+        glfwHideWindow(_window);
+        int major, minor;
+        glGetIntegerv(GL_MAJOR_VERSION, &major);
+        glGetIntegerv(GL_MINOR_VERSION, &minor);
 
-		int major, minor;
-		glGetIntegerv(GL_MAJOR_VERSION, &major);
-		glGetIntegerv(GL_MINOR_VERSION, &minor);
+        int version = major * 10 + minor;
 
-		int version = major * 10 + minor;
+        if(version < 33)	// version 3.3
+        {
+            glfwTerminate();
+            return false;
+        }
 
-		if(version <= 33)	// version 3.3
-		{
-			glutDestroyWindow(_window_id);
-			return false;
-
-		}
-
-		// save off our version
-		_version = version;
+        // save off our version
+        _version = version;
 
 		// we have to set this to true or else we won't get all the functions we need
 		glewExperimental=true;
 		auto result = glewInit();
 		if(result != GLEW_OK)
 		{
-			glutDestroyWindow(_window_id);
+            glfwTerminate();
 			return false;
 		}
 
 		while(glGetError() != GL_NO_ERROR);
-
-		///  Setup initial properties
+        ///  Setup initial properties
 
 		// fill polygons drawn
 		// http://www.opengl.org/sdk/docs/man3/xhtml/glPolygonMode.xml
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		// according to docs, these are the only two capabilities
 		// enabeld by default (the rest are disabled)
 		 // http://www.opengl.org/sdk/docs/man3/xhtml/glDisable.xml
 		glDisable(GL_DITHER);
 		glDisable(GL_MULTISAMPLE);
-
 		// some helpful constants
 		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &_max_texture_size);
 		glGetIntegerv(GL_MAX_VIEWPORT_DIMS, &_max_viewport_dimensions[0]);
-
 
 		/// Compile our vertex shader all programs use
 
@@ -123,7 +140,7 @@ namespace SiCKL
 	{
 		if(_initialized)
 		{
-			glutDestroyWindow(_window_id);
+            glfwTerminate();
 			_initialized = false;
 		}
 
@@ -385,7 +402,7 @@ namespace SiCKL
 		return OpenGLRuntime::RequiredBufferSpace(Width, Height, Type);
 	}
 
-	void OpenGLBuffer2D::SetData(OpenGLBuffer2D& in_buffer)
+    void OpenGLBuffer2D::SetData(const OpenGLBuffer2D& in_buffer)
 	{
 		COMPUTE_ASSERT(this != &in_buffer);
 
@@ -393,15 +410,16 @@ namespace SiCKL
 		COMPUTE_ASSERT(this->Height == in_buffer.Height);
 		COMPUTE_ASSERT(this->Type == in_buffer.Type);
 
-		// old verions
+        // old versions
 
 		if(GetOpenGLVersion() < 43)
 		{
 			// Texture -> CPU -> Texture copy
-			void* buffer;
-			get_data(&buffer);
+            void* buffer = nullptr;
+            in_buffer.GetData(buffer);
 
-			in_buffer.SetData(buffer);
+            this->SetData(buffer);
+            free(buffer);
 		}
 		else
 		{
@@ -412,13 +430,9 @@ namespace SiCKL
 			COMPUTE_ASSERT(err == GL_NO_ERROR);
 			// Texture -> Texture copy
 		}
-		void* buffer = nullptr;
-		get_data(&buffer);
-
-		
 	}
 
-	void OpenGLBuffer2D::SetData( void* in_buffer )
+    void OpenGLBuffer2D::SetData( const void* in_buffer )
 	{
 		glBindTexture(GL_TEXTURE_RECTANGLE, TextureHandle);
 		switch(Type)
