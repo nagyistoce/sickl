@@ -33,8 +33,6 @@ macx {
 INCLUDEPATH += include
 
 win32 {
-    DEFINES += FREEGLUT_LIB_PRAGMAS=0
-    DEFINES += FREEGLUT_STATIC=1
     DEFINES += GLEW_STATIC=1
 
     INCLUDEPATH += \
@@ -62,7 +60,8 @@ HEADERS += \
     include/Buffers.h \
     include/AST.h \
     include/Backends/OpenGL.h \
-    include/Common.h
+    include/Common.h \
+    include/Backends/OpenCL.h
 
 # sources
 
@@ -73,7 +72,9 @@ SOURCES += \
     source/Types.cpp \
     source/Source.cpp \
     source/Functions.cpp \
-    source/AST.cpp
+    source/AST.cpp \
+    source/Backends/OpenCL/OpenCL.Runtime.cpp \
+    source/Backends/OpenCL/OpenCL.Compiler.cpp
 
 # unix {
 #   target.path = /usr/lib

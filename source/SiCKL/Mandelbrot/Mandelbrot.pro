@@ -55,6 +55,7 @@ win32 {
     LIBS += -framework OpenGL
     LIBS += -framework IOKit
     LIBS += -framework CoreVideo
+    LIBS += -framework OpenCL
 } else:unix {
     LIBS += -L/usr/lib -lglut
     LIBS += -lGLEW

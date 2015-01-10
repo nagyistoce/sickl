@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdint.h>
 
 #define count_of(X) (sizeof(X) / sizeof(X[0]))
@@ -40,7 +42,7 @@ namespace SiCKL
 		// returns memory to safe state to memcpy new data to it
 		void Cleanup()
 		{
-			(*_counter)--;
+            (*_counter)--;
 			COMPUTE_ASSERT(*_counter >= 0);
 			T* ptr = static_cast<T*>(this);
 			COMPUTE_ASSERT(ptr != nullptr);
@@ -48,7 +50,7 @@ namespace SiCKL
 			{
 				// deletes memory
 				ptr->Delete();
-				delete _counter;
+			//	delete _counter;
 			}
 		}
 
@@ -57,11 +59,12 @@ namespace SiCKL
 			(*right._counter)++;
 			memcpy(this, &right, sizeof(T));
 		}
-
+    private:
 		mutable int32_t* _counter;
 	};
 }
 
+// fills out assignment and cleanup method declerations
 #define REF_COUNTED(X) \
 public: \
 	X& operator=(const X& right) \
@@ -76,3 +79,21 @@ private: \
 	void Delete(); \
 	friend class SiCKL::RefCounted<X>; \
 public:
+
+// provides a typesafe typedef wrapper around a primitive type
+#define SAFE_TYPEDEF(NAME, TYPE) \
+struct NAME \
+{ \
+    NAME() \
+    : _val(TYPE()) \
+    { } \
+    NAME(const TYPE in_val) \
+    : _val(in_val) \
+    { } \
+    operator const TYPE&() const \
+    { return _val; } \
+    operator TYPE&() \
+    { return _val; } \
+private: \
+    TYPE _val; \
+}

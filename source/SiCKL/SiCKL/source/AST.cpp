@@ -160,13 +160,15 @@ namespace SiCKL
 		, _count(0)
 		, _capacity(1)
 		, _return_type(ReturnType::Invalid)
-		, _name(nullptr)
+        , _u({0})
+        , _name(nullptr)
 	{
 		_children = new ASTNode*[_capacity];
 		_children[0] = nullptr;
 	}
 
 	ASTNode::ASTNode(const ASTNode& in_node)
+        : _u({0})
 	{
 		_node_type = in_node._node_type;
 		_return_type = in_node._return_type;
@@ -206,7 +208,8 @@ namespace SiCKL
 		, _count(0)
 		, _capacity(1)
 		, _return_type(return_type)
-		, _name(nullptr)
+        , _u({0})
+        , _name(nullptr)
 	{
 		_children = new ASTNode*[_capacity];
 		_children[0] = nullptr;
@@ -217,7 +220,8 @@ namespace SiCKL
 		, _count(0)
 		, _capacity(1)
 		, _return_type(return_type)
-		, _name(nullptr)
+        , _u({0})
+        , _name(nullptr)
 	{
 		_u.sid = sid;
 		_children = new ASTNode*[_capacity];
@@ -271,13 +275,13 @@ namespace SiCKL
 
 	void ASTNode::PrintNode() const
 	{
-		printf("%s -> %s", NodeTypes[_node_type + 1], GetReturnType(_return_type));
+		printf("%s -> %s (%p)", NodeTypes[_node_type + 1], GetReturnType(_return_type), this);
 		switch(_node_type)
 		{
 		case NodeType::Var:
 		case NodeType::ConstVar:
 		case NodeType::OutVar:
-			printf(", symbol = 0x%x", _u.sid);
+			printf(", symbol = 0x%x", static_cast<uint32_t>(_u.sid));
 			if(_name != nullptr)
 			{
 				printf(", name = %s", _name);
