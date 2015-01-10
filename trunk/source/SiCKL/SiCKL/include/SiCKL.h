@@ -18,14 +18,21 @@
 #endif
 
 #define COMPUTE_ASSERT(X) if(!(X)) {printf("Assert Failed: %s line %i on \"%s\"\n", __FILE__, __LINE__, #X);  DEBUGBREAK();}
+#define SICKL_ASSERT(X) COMPUTE_ASSERT(X)
 
+#ifdef __APPLE__
+#include <OpenCL/cl.h>
+#else
+#include <CL/cl.h>
+#endif
+
+#include "Common.h"
 #include "Enums.h"
 #include "AST.h"
 #include "Source.h"
 #include "Compiler.h"
 #include "Program.h"
-#include "Common.h"
 
 // Backends
 #include "Backends/OpenGL.h"
-
+#include "Backends/OpenCL.h"

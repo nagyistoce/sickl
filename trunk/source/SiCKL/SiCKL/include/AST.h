@@ -27,9 +27,9 @@ namespace SiCKL
 			, _count(0)
 			, _capacity(1)
 			, _return_type(return_type)
+			, _u({0})
 			, _name(nullptr)
-
-		{
+   	{
 			COMPUTE_ASSERT(node_type == NodeType::Literal);
 			// copy in raw data
 			_u.literal.data = malloc(sizeof(T));

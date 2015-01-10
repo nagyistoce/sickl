@@ -3,7 +3,9 @@
 #include <stdint.h>
 namespace SiCKL
 {
-	typedef int32_t symbol_id_t;
+    //typedef int32_t symbol_id_t;
+    SAFE_TYPEDEF(symbol_id_t, int32_t);
+    
 	typedef int32_t member_id_t;
 	const symbol_id_t invalid_symbol = -1;
 	const symbol_id_t temp_symbol = -2;
@@ -59,7 +61,8 @@ namespace SiCKL
 			Multiply,
 			Divide,
 			Modulo,
-			// Functions
+
+            // Functions
 			Constructor,
 			Cast,
 			Function,
@@ -101,6 +104,7 @@ namespace SiCKL
 #			undef SHIFT
 		};
 	};
+    typedef ReturnType::Type ReturnType_t;
 
 	struct BuiltinFunction
 	{
@@ -149,3 +153,19 @@ namespace SiCKL
 		};
 	};
 }
+
+//  error macros
+#define ReturnIfError(X) do {sickl_int __si = (X); if(__si != SICKL_SUCCESS) return __si; } while(0,0)
+#define ReturnErrorIfTrue(X, ERR)  do {bool __b = (X); if(__b) return ERR; } while(0,0)
+#define ReturnErrorIfFalse(X, ERR) ReturnErrorIfTrue(!(X), ERR)
+#define ReturnErrorIfNull(X, ERR) ReturnErrorIfTrue((X) == nullptr, ERR)
+
+// error codes
+// overlaps with CL errors
+typedef cl_int sickl_int;
+
+#define SICKL_SUCCESS 0
+// OpenCL error codes follow from -1 to -68
+#define SICKL_INVALID_KERNEL_ARG -69
+#define SICKL_OUT_OF_MEMORY -70
+

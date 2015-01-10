@@ -63,6 +63,23 @@ public:
 
 int main()
 {
+    if(OpenCLRuntime::Initialize() != SICKL_SUCCESS)
+    {
+        printf("Could not OpenCL Context\n");
+        return -1;
+    }
+
+    Mandelbrot mbrot;
+    
+    mbrot.Parse();
+  
+    mbrot.GetRoot().Print();
+    
+    OpenCLProgram program;
+    OpenCLCompiler::Build(mbrot, program);
+
+#if 0
+
 	// init GLEW/GLUT and other gl setup
     if(!OpenGLRuntime::Initialize())
     {
@@ -165,5 +182,6 @@ int main()
 	free(result_buffer);
 	delete program;
 
-	OpenGLRuntime::Finalize();
+    OpenGLRuntime::Finalize();
+#endif
 }
